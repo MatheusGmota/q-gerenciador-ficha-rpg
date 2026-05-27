@@ -65,7 +65,8 @@
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
-            <version>9.7.0</version>
+            <version>9.9.0</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Lombok -->

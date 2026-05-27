@@ -45,7 +45,11 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
 
         if (ex instanceof FirebaseAuthException fe) {
             log.error("FirebaseAuthException: {}", ex.getMessage(),ex);
+            if (fe.getMessage().contains("No user record found")) return build(Response.Status.NOT_FOUND, "Usuário não encontrado");
+            if (fe.getAuthErrorCode() == null) return build(Response.Status.BAD_REQUEST, fe.getMessage());
+
             return switch (fe.getAuthErrorCode().name()) {
+                case "USER_NOT_FOUND" -> build(Response.Status.NOT_FOUND, fe.getLocalizedMessage());
                 case "EMAIL_ALREADY_EXISTS" -> build(Response.Status.CONFLICT, fe.getLocalizedMessage());
                 case "INVALID_EMAIL" -> build(Response.Status.BAD_REQUEST, "E-mail inválido");
                 case "WEAK_PASSWORD" -> build(Response.Status.BAD_REQUEST, "Senha fraca. Use ao menos 6 caracteres");
