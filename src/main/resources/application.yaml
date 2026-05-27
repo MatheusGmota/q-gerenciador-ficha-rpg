@@ -1,0 +1,24 @@
+# Configuração Global
+quarkus:
+
+  http:
+    port: ${PORT:8080}
+
+  # Configuração do OpenAPI e Swagger UI
+  smallrye-openapi:
+    info-title: "Harmonia RPG API"
+    info-version: "1.0.0"
+    info-description: "API para gerenciamento de fichas de RPG"
+    security-scheme: jwt
+
+  swagger-ui:
+    path: /swagger
+
+google:
+  cloud:
+    database-id: ${DATABASE_ID}
+    project-id: ${GOOGLE_CLOUD_PROJECT_ID}
+    credentials-path: ${GOOGLE_CLOUD_CREDENTIALS_PATH}
+    firebase:
+      api-key: ${FIREBASE_API_KEY}
+      auth: enabled
