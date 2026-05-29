@@ -16,7 +16,6 @@ quarkus:
 
 google:
   cloud:
-    database-id: ${DATABASE_ID}
     project-id: ${GOOGLE_CLOUD_PROJECT_ID}
     credentials-path: ${GOOGLE_CLOUD_CREDENTIALS_PATH}
     firebase:
