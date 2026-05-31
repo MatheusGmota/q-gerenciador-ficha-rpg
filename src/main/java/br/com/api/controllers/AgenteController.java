@@ -1,6 +1,7 @@
 package br.com.api.controllers;
 
 import br.com.api.domain.dtos.agente.AgenteCreateDTO;
+import br.com.api.domain.dtos.agente.AgenteResponseDTO;
 import br.com.api.domain.dtos.agente.AgenteUpdateDTO;
 import br.com.api.services.interfaces.AgenteService;
 import jakarta.inject.Inject;
@@ -11,6 +12,8 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.concurrent.ExecutionException;
 
+import static br.com.api.infra.security.AuthUtil.extractBearerToken;
+
 @Path("/api/v1/ficha/agente")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
@@ -19,18 +22,16 @@ public class AgenteController {
     @Inject
     AgenteService service;
 
-    // HELPER
-    private String tokenTrim(String authHeader) {
-        return authHeader.replace("Bearer", "").trim();
-    }
-
     @GET
     @Path("/{idFicha}")
     public Response get(
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha) throws ExecutionException, InterruptedException {
+        String token = extractBearerToken(authHeader);
+        AgenteResponseDTO obter = service.obter(token, idFicha);
+
         return Response
-                .ok(service.obter(tokenTrim(authHeader), idFicha))
+                .ok(obter)
                 .build();
     }
 
@@ -38,9 +39,12 @@ public class AgenteController {
     public Response post(
             @HeaderParam("Authorization") String authHeader,
             @Valid AgenteCreateDTO request) throws ExecutionException, InterruptedException {
+        String token = extractBearerToken(authHeader);
+        AgenteResponseDTO criar = service.criar(token, request);
+
         return Response
                 .status(Response.Status.CREATED)
-                .entity(service.criar(tokenTrim(authHeader), request))
+                .entity(criar)
                 .build();
     }
 
@@ -51,8 +55,9 @@ public class AgenteController {
             @PathParam("idFicha") String idFicha,
             @Valid AgenteUpdateDTO request
     ) throws ExecutionException, InterruptedException {
+        String token = extractBearerToken(authHeader);
+        service.atualizar(token, idFicha, request);
 
-        service.atualizar(tokenTrim(authHeader), idFicha, request);
         return Response.noContent().build();
     }
 
@@ -62,8 +67,9 @@ public class AgenteController {
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha
     ) throws ExecutionException, InterruptedException {
+        String token = extractBearerToken(authHeader);
+        service.deletar(token, idFicha);
 
-        service.deletar(tokenTrim(authHeader), idFicha);
         return Response.noContent().build();
     }
 }
