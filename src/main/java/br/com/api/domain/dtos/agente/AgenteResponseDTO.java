@@ -6,7 +6,6 @@ import br.com.api.domain.enums.TipoOrigem;
 import br.com.api.domain.enums.TipoTrilha;
 import br.com.api.domain.model.Atributos;
 import br.com.api.domain.model.Status;
-import com.google.cloud.Timestamp;
 
 public record AgenteResponseDTO (
         String id,
@@ -34,6 +33,6 @@ public record AgenteResponseDTO (
         String resistencias,
         String protecoes,
 
-        Timestamp criadoEm
+        String criadoEm
 ) {
 }

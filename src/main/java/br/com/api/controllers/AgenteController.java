@@ -2,6 +2,7 @@ package br.com.api.controllers;
 
 import br.com.api.domain.dtos.agente.AgenteCreateDTO;
 import br.com.api.domain.dtos.agente.AgenteResponseDTO;
+import br.com.api.domain.dtos.agente.AgenteResumoResponseDTO;
 import br.com.api.domain.dtos.agente.AgenteUpdateDTO;
 import br.com.api.domain.dtos.habilidade.HabilidadeRequestDTO;
 import br.com.api.domain.dtos.habilidade.HabilidadeResponseDTO;
@@ -27,15 +28,33 @@ public class AgenteController {
 
     @GET
     @Path("/{idFicha}")
-    public Response get(
+    public Response getById(
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha) throws ExecutionException, InterruptedException {
         String token = extractBearerToken(authHeader);
         AgenteResponseDTO obter = service.obter(token, idFicha);
 
-        return Response
-                .ok(obter)
-                .build();
+        return Response.ok(obter).build();
+    }
+
+    @GET
+    @Path("/usuario")
+    public Response getAllByUserId(
+            @HeaderParam("Authorization") String authHeader
+    ) throws ExecutionException, InterruptedException {
+        String token = extractBearerToken(authHeader);
+        List<AgenteResumoResponseDTO> obter = service.obterPorIdUsuario(token);
+
+        return Response.ok(obter).build();
+    }
+
+    @GET
+    public Response getAll(
+            @HeaderParam("Authorization") String authHeader) throws ExecutionException, InterruptedException {
+        String token = extractBearerToken(authHeader);
+        List<AgenteResumoResponseDTO> obter = service.obterTudo(token);
+
+        return Response.ok(obter).build();
     }
 
     @POST

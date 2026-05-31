@@ -2,6 +2,7 @@ package br.com.api.domain.mappers;
 
 import br.com.api.domain.dtos.agente.AgenteCreateDTO;
 import br.com.api.domain.dtos.agente.AgenteResponseDTO;
+import br.com.api.domain.dtos.agente.AgenteResumoResponseDTO;
 import br.com.api.domain.entities.Agente;
 import br.com.api.domain.enums.TipoClasse;
 import br.com.api.domain.model.Atributos;
@@ -115,7 +116,16 @@ public class AgenteMapper {
                 a.getDeslocamento(),
                 a.getResistencias(),
                 a.getProtecoes(),
-                a.getCriadoEm()
+                a.getCriadoEm().toSqlTimestamp().toString()
+        );
+    }
+
+    public static AgenteResumoResponseDTO toAgenteResumoDto(Agente a) {
+        return new AgenteResumoResponseDTO(
+                a.getId(),
+                a.getImagemUrl(),
+                a.getNome(),
+                a.getCriadoEm().toSqlTimestamp().toString()
         );
     }
 }

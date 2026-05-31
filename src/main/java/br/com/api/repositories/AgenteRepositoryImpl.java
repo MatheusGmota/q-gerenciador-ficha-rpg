@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 @ApplicationScoped
 public class AgenteRepositoryImpl implements AgenteRepository {
     private static final String COLLECTION_NAME = "fichas";
+    private static final int MAX_LIMIT_DOCUMENTS = 10;
 
     @Inject
     public Firestore db;
@@ -27,14 +28,60 @@ public class AgenteRepositoryImpl implements AgenteRepository {
     }
 
     private DocumentReference getFichasCollection(String idFicha) {
-        return db.collection(COLLECTION_NAME).document(idFicha);
+        return getCollection().document(idFicha);
+    }
+
+    private CollectionReference getHabilidadesCollection(String idFicha) {
+        return getFichasCollection(idFicha)
+                .collection(Habilidade.COLLECTION_NAME);
+    }
+
+    public boolean excedeuLimiteMaxFichas(String idUsuario)  throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> query = getCollection()
+                .whereEqualTo("idUsuario", idUsuario)
+                .get();
+
+        List<QueryDocumentSnapshot> documents = query.get().getDocuments();
+
+        if (documents.isEmpty()) return false;
+
+        return documents.size() == MAX_LIMIT_DOCUMENTS;
+
+    }
+
+    @Override
+    public List<Agente> obterFichasPorIdUsuario(String idUsuario) throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> query = getCollection()
+                .whereEqualTo("idUsuario", idUsuario)
+                .orderBy("criadoEm")
+                .limit(MAX_LIMIT_DOCUMENTS)
+                .get();
+
+        QuerySnapshot snapshot = query.get();
+        if (snapshot.isEmpty()) return List.of();
+
+        return snapshot.getDocuments()
+                .stream()
+                .map(doc -> doc.toObject(Agente.class))
+                .toList();
+    }
+
+    @Override
+    public List<Agente> obterTodasFichas() throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> query = getCollection().get();
+
+        QuerySnapshot snapshot = query.get();
+        if (snapshot.isEmpty()) return List.of();
+
+        return snapshot
+                .getDocuments()
+                .stream().map(doc -> doc.toObject(Agente.class))
+                .toList();
     }
 
     @Override
     public Optional<Agente> obterPorId(String idFicha) throws ExecutionException, InterruptedException {
-        DocumentSnapshot doc = getFichasCollection(idFicha)
-                .get()
-                .get();
+        DocumentSnapshot doc = getFichasCollection(idFicha).get().get();
 
         if (!doc.exists()) return Optional.empty();
         return Optional.ofNullable(doc.toObject(Agente.class));
@@ -56,9 +103,10 @@ public class AgenteRepositoryImpl implements AgenteRepository {
         getFichasCollection(idFicha).delete();
     }
 
+    // =============================== HABILIDADES ===============================
     @Override
     public List<Habilidade> obterHabilidades(String idFicha) throws ExecutionException, InterruptedException {
-        QuerySnapshot query = getFichasCollection(idFicha).collection(Habilidade.COLLECTION_NAME).get().get();
+        QuerySnapshot query = getHabilidadesCollection(idFicha).get().get();
 
         return query.getDocuments()
                 .stream().map(doc -> doc.toObject(Habilidade.class))
@@ -67,7 +115,7 @@ public class AgenteRepositoryImpl implements AgenteRepository {
 
     @Override
     public Habilidade persistirHabilidade(String idFicha, Habilidade habilidade) throws ExecutionException, InterruptedException {
-        DocumentReference doc = getFichasCollection(idFicha).collection(Habilidade.COLLECTION_NAME)
+        DocumentReference doc = getHabilidadesCollection(idFicha)
                 .add(habilidade).get();
 
         return doc.get().get().toObject(Habilidade.class);
@@ -75,19 +123,19 @@ public class AgenteRepositoryImpl implements AgenteRepository {
 
     @Override
     public void atualizarHabilidade(String idFicha, String idHabilidade, Habilidade habilidade) throws ExecutionException, InterruptedException {
-        getFichasCollection(idFicha).collection(Habilidade.COLLECTION_NAME)
+        getHabilidadesCollection(idFicha)
                 .document(idHabilidade).set(habilidade).get();
     }
 
     @Override
     public void deletarHabilidade(String idFicha, String idHabilidade) {
-        getFichasCollection(idFicha).collection(Habilidade.COLLECTION_NAME)
+        getHabilidadesCollection(idFicha)
                 .document(idHabilidade).delete();
     }
 
     @Override
     public boolean existeDocHabilidade(String idFicha, String idHabilidade) throws ExecutionException, InterruptedException {
-        ApiFuture<DocumentSnapshot> future = getFichasCollection(idFicha).collection(Habilidade.COLLECTION_NAME)
+        ApiFuture<DocumentSnapshot> future = getHabilidadesCollection(idFicha)
                 .document(idHabilidade).get();
 
         return future.get().exists();

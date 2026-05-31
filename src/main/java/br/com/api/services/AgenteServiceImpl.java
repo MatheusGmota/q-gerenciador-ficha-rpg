@@ -2,14 +2,17 @@ package br.com.api.services;
 
 import br.com.api.domain.dtos.agente.AgenteCreateDTO;
 import br.com.api.domain.dtos.agente.AgenteResponseDTO;
+import br.com.api.domain.dtos.agente.AgenteResumoResponseDTO;
 import br.com.api.domain.dtos.agente.AgenteUpdateDTO;
 import br.com.api.domain.dtos.habilidade.HabilidadeRequestDTO;
 import br.com.api.domain.dtos.habilidade.HabilidadeResponseDTO;
 import br.com.api.domain.entities.Agente;
 import br.com.api.domain.entities.subcollections.Habilidade;
+import br.com.api.domain.mappers.AgenteMapper;
 import br.com.api.domain.mappers.HabilidadeMapper;
 import br.com.api.repositories.interfaces.AgenteRepository;
 import br.com.api.services.interfaces.AgenteService;
+import com.google.firebase.auth.FirebaseToken;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
@@ -21,11 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import static br.com.api.domain.mappers.AgenteMapper.toAgente;
-import static br.com.api.domain.mappers.AgenteMapper.toAgenteDto;
+import static br.com.api.domain.mappers.AgenteMapper.*;
 import static br.com.api.domain.mappers.HabilidadeMapper.*;
 import static br.com.api.domain.util.ValidationUtil.validaCampos;
-
 
 @ApplicationScoped
 @Slf4j
@@ -38,6 +39,27 @@ public class AgenteServiceImpl implements AgenteService {
     AuthenticationService authService;
 
     @Override
+    public List<AgenteResumoResponseDTO> obterTudo(String token) throws ExecutionException, InterruptedException {
+        FirebaseToken decoded = authService.validarToken(token);
+        if (Boolean.FALSE.equals(decoded.getClaims().get("admin"))) {
+            throw new WebApplicationException("Usuário não possui permissão para acessar essa rota", Response.Status.FORBIDDEN);
+        }
+
+        return repository.obterTodasFichas()
+                .stream().map(AgenteMapper::toAgenteResumoDto)
+                .toList();
+    }
+
+    @Override
+    public List<AgenteResumoResponseDTO> obterPorIdUsuario(String token) throws ExecutionException, InterruptedException {
+        String uid = authService.validarToken(token).getUid(); // validar token
+
+        return repository.obterFichasPorIdUsuario(uid)
+                .stream().map(AgenteMapper::toAgenteResumoDto)
+                .toList();
+    }
+
+    @Override
     public AgenteResponseDTO obter(String token, String idFicha) throws ExecutionException, InterruptedException {
         Agente ficha = validarAcessoFicha(token, idFicha);
 
@@ -47,6 +69,9 @@ public class AgenteServiceImpl implements AgenteService {
     @Override
     public AgenteResponseDTO criar(String token, AgenteCreateDTO request) throws ExecutionException, InterruptedException {
         String uid = authService.validarToken(token).getUid();
+
+        if (repository.excedeuLimiteMaxFichas(uid)) throw new WebApplicationException("Usuário atingiu o limite máximo de fichas");
+
         Agente ficha = repository.persistirFicha(toAgente(uid, request));
         return toAgenteDto(ficha);
     }
@@ -140,7 +165,7 @@ public class AgenteServiceImpl implements AgenteService {
         if (!ficha.getIdUsuario().equals(uid)) {
             throw new WebApplicationException(
                     "Usuário não autorizado",
-                    Response.Status.UNAUTHORIZED
+                    Response.Status.FORBIDDEN
             );
         }
 
