@@ -5,25 +5,27 @@ import br.com.api.domain.dtos.descricao.DescricaoRequestDTO;
 import br.com.api.domain.enums.TipoElemento;
 
 public record AgenteUpdateDTO(
-        String nome,
         String imagemUrl,
-
-        int nivelExposicao,
-        int defesa,
-        String deslocamento,
-        String resistencias,
+        String nome,
+        int idade,
 
         StatusDTO pontosVida,
         StatusDTO pontosSanidade,
         StatusDTO pontosEsforco,
 
         AtributosRequestDTO atributos,
-        int idade,
+        DescricaoRequestDTO descricao,
+
+        int nivelExposicao,
         int esforcoPorRodada,
-        TipoElemento afinidade,
+        int defesa,
         int defesaEsquiva,
         int reducaoBloqueio,
+
         String protecoes,
-        DescricaoRequestDTO descricao
+        String resistencias,
+        String deslocamento,
+
+        TipoElemento afinidade
 ) {
 }
