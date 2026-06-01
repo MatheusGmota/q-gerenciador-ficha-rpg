@@ -1,7 +1,9 @@
-package br.com.api.services;
+package br.com.api.services.validators;
 
 import br.com.api.domain.entities.Agente;
 import br.com.api.repositories.interfaces.AgenteRepository;
+import br.com.api.services.AuthenticationService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
@@ -9,7 +11,8 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.concurrent.ExecutionException;
 
-public abstract class GenericService {
+@ApplicationScoped
+public class FichaAccessValidator {
 
     @Inject
     AuthenticationService authService;
@@ -17,7 +20,7 @@ public abstract class GenericService {
     @Inject
     AgenteRepository repository;
 
-    protected Agente validarAcessoFicha(
+    public Agente validarAcessoFicha(
             String token,
             String idFicha
     ) throws ExecutionException, InterruptedException {
