@@ -9,6 +9,7 @@ import br.com.api.domain.factories.AgenteFactory;
 import br.com.api.domain.mappers.AgenteMapper;
 import br.com.api.repositories.interfaces.AgenteRepository;
 import br.com.api.services.interfaces.AgenteService;
+import br.com.api.services.validators.FichaAccessValidator;
 import com.google.firebase.auth.FirebaseToken;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -24,7 +25,10 @@ import static br.com.api.util.ValidationUtil.validaCampos;
 
 @ApplicationScoped
 @Slf4j
-public class AgenteServiceImpl extends GenericService implements AgenteService {
+public class AgenteServiceImpl implements AgenteService {
+
+    @Inject
+    FichaAccessValidator accessValidator;
 
     @Inject
     AgenteRepository repository;
@@ -61,7 +65,7 @@ public class AgenteServiceImpl extends GenericService implements AgenteService {
 
     @Override
     public AgenteResponseDTO obter(String token, String idFicha) throws ExecutionException, InterruptedException {
-        Agente ficha = validarAcessoFicha(token, idFicha);
+        Agente ficha = accessValidator.validarAcessoFicha(token, idFicha);
 
         return mapper.toAgenteDto(ficha);
     }
@@ -81,7 +85,7 @@ public class AgenteServiceImpl extends GenericService implements AgenteService {
 
     @Override
     public void atualizar(String token, String idFicha, AgenteUpdateDTO request) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idFicha); // valida token, ficha existente e permissão para editar ficha
+        accessValidator.validarAcessoFicha(token, idFicha); // valida token, ficha existente e permissão para editar ficha
 
         Map<String, Object> camposValidados = validaCampos(request);
         repository.alterarFicha(idFicha, camposValidados);
@@ -89,7 +93,7 @@ public class AgenteServiceImpl extends GenericService implements AgenteService {
 
     @Override
     public void deletar(String token, String idFicha) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idFicha); // valida token, ficha existente e permissão para editar ficha
+        accessValidator.validarAcessoFicha(token, idFicha); // valida token, ficha existente e permissão para editar ficha
         repository.deletarFicha(idFicha);
     }
 }
