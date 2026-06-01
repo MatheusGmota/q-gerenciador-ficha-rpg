@@ -4,28 +4,13 @@ import br.com.api.domain.dtos.user.CreateUserDTO;
 import br.com.api.domain.dtos.user.UserResponseDTO;
 import br.com.api.domain.entities.User;
 import com.google.firebase.auth.UserRecord;
-import lombok.NoArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-@NoArgsConstructor
-public class UserMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.CDI)
+public interface UserMapper {
 
-    public static User fromCreateUserDTO(CreateUserDTO dto) {
-        User user = new User();
-        user.setUsername(dto.username());
-        user.setEmail(dto.email());
-        user.setTelefone(dto.telefone());
-        user.setPassword(dto.password());
-        user.setUserRole(dto.userRole());
-        return user;
-    }
+    User fromCreateUserDTO(CreateUserDTO dto);
 
-    public static UserResponseDTO fromUserRecord(UserRecord user) {
-        return new UserResponseDTO(
-                user.getUid(),
-                user.getDisplayName(),
-                user.getEmail(),
-                user.getPhoneNumber(),
-                user.getPhotoUrl()
-        );
-    }
+    UserResponseDTO fromUserRecord(UserRecord user);
 }

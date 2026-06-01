@@ -24,7 +24,7 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
     public Response toResponse(Throwable ex) {
 
         if (ex instanceof NotFoundException nfe) {
-            log.error("NotFoundException: {}", ex.getMessage(),ex);
+            log.error("NotFoundException: {}", ex.getMessage());
             return build(Response.Status.NOT_FOUND, nfe.getLocalizedMessage());
         }
 
@@ -59,7 +59,7 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
         }
 
         if (ex instanceof ConstraintViolationException cve) {
-            log.error("ConstraintViolationException: {}", ex.getMessage(),ex);
+            log.error("ConstraintViolationException: {}", ex.getMessage());
             Map<String, String> erros = cve.getConstraintViolations().stream()
                     .collect(Collectors.toMap(
                             v -> {
@@ -74,7 +74,7 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
         }
 
         if (ex instanceof WebApplicationException wae) {
-            log.error("WebApplicationError: {}", ex.getMessage(),ex);
+            log.error("WebApplicationError: {}", ex.getMessage());
             return build(
                     Response.Status.fromStatusCode(wae.getResponse().getStatus()),
                     wae.getMessage()

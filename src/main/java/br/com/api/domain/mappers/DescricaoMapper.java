@@ -2,17 +2,11 @@ package br.com.api.domain.mappers;
 
 import br.com.api.domain.dtos.descricao.DescricaoRequestDTO;
 import br.com.api.domain.model.Descricao;
-import lombok.NoArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-@NoArgsConstructor
-public class DescricaoMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.CDI)
+public interface DescricaoMapper {
 
-    public static Descricao toDescricao(DescricaoRequestDTO dto) {
-        return new Descricao(
-                dto.aparencia(),
-                dto.personalidade(),
-                dto.objetivo(),
-                dto.historico()
-        );
-    }
+    Descricao toDescricao(DescricaoRequestDTO dto);
 }

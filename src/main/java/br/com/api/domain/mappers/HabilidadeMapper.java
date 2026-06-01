@@ -3,22 +3,13 @@ package br.com.api.domain.mappers;
 import br.com.api.domain.dtos.habilidade.HabilidadeRequestDTO;
 import br.com.api.domain.dtos.habilidade.HabilidadeResponseDTO;
 import br.com.api.domain.entities.subcollections.Habilidade;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-public class HabilidadeMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.CDI)
+public interface HabilidadeMapper {
 
-    public static Habilidade toHabilidade(HabilidadeRequestDTO dto) {
-        Habilidade habilidade = new Habilidade();
-        habilidade.setNome(dto.nome());
-        habilidade.setDescricao(dto.descricao());
+    Habilidade toHabilidade(HabilidadeRequestDTO dto);
 
-        return habilidade;
-    }
-
-    public static HabilidadeResponseDTO toHabilidadeDto(Habilidade h) {
-        return new HabilidadeResponseDTO(
-                h.getId(),
-                h.getNome(),
-                h.getDescricao()
-        );
-    }
+    HabilidadeResponseDTO toHabilidadeDto(Habilidade h);
 }

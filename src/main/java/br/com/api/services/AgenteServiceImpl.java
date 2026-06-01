@@ -5,6 +5,7 @@ import br.com.api.domain.dtos.agente.AgenteResponseDTO;
 import br.com.api.domain.dtos.agente.AgenteResumoResponseDTO;
 import br.com.api.domain.dtos.agente.AgenteUpdateDTO;
 import br.com.api.domain.entities.Agente;
+import br.com.api.domain.factories.AgenteFactory;
 import br.com.api.domain.mappers.AgenteMapper;
 import br.com.api.repositories.interfaces.AgenteRepository;
 import br.com.api.services.interfaces.AgenteService;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import static br.com.api.domain.mappers.AgenteMapper.*;
 import static br.com.api.util.ValidationUtil.validaCampos;
 
 @ApplicationScoped
@@ -32,6 +32,12 @@ public class AgenteServiceImpl extends GenericService implements AgenteService {
     @Inject
     AuthenticationService authService;
 
+    @Inject
+    AgenteMapper mapper;
+
+    @Inject
+    AgenteFactory agenteFactory;
+
     @Override
     public List<AgenteResumoResponseDTO> obterTudo(String token) throws ExecutionException, InterruptedException {
         FirebaseToken decoded = authService.validarToken(token);
@@ -40,7 +46,7 @@ public class AgenteServiceImpl extends GenericService implements AgenteService {
         }
 
         return repository.obterTodasFichas()
-                .stream().map(AgenteMapper::toAgenteResumoDto)
+                .stream().map(mapper::toAgenteResumoDto)
                 .toList();
     }
 
@@ -49,7 +55,7 @@ public class AgenteServiceImpl extends GenericService implements AgenteService {
         String uid = authService.validarToken(token).getUid(); // validar token
 
         return repository.obterFichasPorIdUsuario(uid)
-                .stream().map(AgenteMapper::toAgenteResumoDto)
+                .stream().map(mapper::toAgenteResumoDto)
                 .toList();
     }
 
@@ -57,7 +63,7 @@ public class AgenteServiceImpl extends GenericService implements AgenteService {
     public AgenteResponseDTO obter(String token, String idFicha) throws ExecutionException, InterruptedException {
         Agente ficha = validarAcessoFicha(token, idFicha);
 
-        return toAgenteDto(ficha);
+        return mapper.toAgenteDto(ficha);
     }
 
     @Override
@@ -66,8 +72,11 @@ public class AgenteServiceImpl extends GenericService implements AgenteService {
 
         if (repository.excedeuLimiteMaxFichas(uid)) throw new WebApplicationException("Usuário atingiu o limite máximo de fichas");
 
-        Agente ficha = repository.persistirFicha(toAgente(uid, request));
-        return toAgenteDto(ficha);
+        Agente ficha = repository.persistirFicha(
+                agenteFactory.criar(uid, request)
+        );
+
+        return mapper.toAgenteDto(ficha);
     }
 
     @Override

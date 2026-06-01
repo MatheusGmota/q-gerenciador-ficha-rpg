@@ -3,6 +3,7 @@ package br.com.api.services;
 import br.com.api.domain.dtos.user.*;
 import br.com.api.domain.entities.User;
 import br.com.api.domain.enums.UserRole;
+import br.com.api.domain.mappers.UserMapper;
 import br.com.api.repositories.interfaces.UserRepository;
 import br.com.api.services.interfaces.UserService;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -14,9 +15,6 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
-import static br.com.api.domain.mappers.UserMapper.fromCreateUserDTO;
-import static br.com.api.domain.mappers.UserMapper.fromUserRecord;
-
 @Slf4j
 @ApplicationScoped
 public class UserServiceImpl implements UserService {
@@ -27,21 +25,24 @@ public class UserServiceImpl implements UserService {
     @Inject
     AuthenticationService authService;
 
+    @Inject
+    UserMapper mapper;
+
     @Override
     public UserResponseDTO getUser(String uid) throws FirebaseAuthException {
         UserRecord user = repository.obterPorId(uid);
-        return fromUserRecord(user);
+        return mapper.fromUserRecord(user);
     }
 
     @Override
     public UserResponseDTO getLoggedUser(String token) throws FirebaseAuthException {
         UserRecord userRecord = repository.obterUsuarioLogado(token);
-        return fromUserRecord(userRecord);
+        return mapper.fromUserRecord(userRecord);
     }
 
     @Override
     public TokenResponseDTO addUser(CreateUserDTO dto) throws FirebaseAuthException, InterruptedException {
-        User user = fromCreateUserDTO(dto);
+        User user = mapper.fromCreateUserDTO(dto);
 
         UserRecord record = repository.criarUsuario(user);
         authService.setUserClaims(record.getUid(), user.getUsername(), user.getUserRole());

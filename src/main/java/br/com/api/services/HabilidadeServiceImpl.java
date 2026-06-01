@@ -13,14 +13,14 @@ import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static br.com.api.domain.mappers.HabilidadeMapper.toHabilidade;
-import static br.com.api.domain.mappers.HabilidadeMapper.toHabilidadeDto;
-
 @ApplicationScoped
 public class HabilidadeServiceImpl extends GenericService implements HabilidadeService {
 
     @Inject
     HabilidadeRepositoryImpl repository;
+
+    @Inject
+    HabilidadeMapper mapper;
 
     @Override
     public List<HabilidadeResponseDTO> obterTudo(
@@ -32,7 +32,7 @@ public class HabilidadeServiceImpl extends GenericService implements HabilidadeS
 
         return repository.procurarTudo(idFicha)
                 .stream()
-                .map(HabilidadeMapper::toHabilidadeDto)
+                .map(mapper::toHabilidadeDto)
                 .toList();
     }
 
@@ -44,7 +44,7 @@ public class HabilidadeServiceImpl extends GenericService implements HabilidadeS
         Habilidade habilidade = repository.procurarPorId(idFicha, idHabilidade)
                 .orElseThrow(() -> new NotFoundException("Ficha não encontrada"));
 
-        return toHabilidadeDto(habilidade);
+        return mapper.toHabilidadeDto(habilidade);
     }
 
     @Override
@@ -57,9 +57,9 @@ public class HabilidadeServiceImpl extends GenericService implements HabilidadeS
         validarAcessoFicha(token, idFicha);
 
         Habilidade habilidade =
-                repository.persistir(idFicha, toHabilidade(request));
+                repository.persistir(idFicha, mapper.toHabilidade(request));
 
-        return toHabilidadeDto(habilidade);
+        return mapper.toHabilidadeDto(habilidade);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class HabilidadeServiceImpl extends GenericService implements HabilidadeS
         if (!repository.existeDocumento(idFicha, idHabilidade))
             throw new NotFoundException("Habilidade não encontrada");
 
-        repository.editar(idFicha, idHabilidade, toHabilidade(request));
+        repository.editar(idFicha, idHabilidade, mapper.toHabilidade(request));
     }
 
     @Override
