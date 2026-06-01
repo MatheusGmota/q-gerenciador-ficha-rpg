@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @ApplicationScoped
-public class HabilidadeServiceImpl extends GenericService implements HabilidadeService {
+public class HabilidadeServiceImpl extends AbstractSubcollectionService implements HabilidadeService {
 
     @Inject
     HabilidadeRepositoryImpl repository;
@@ -42,7 +42,7 @@ public class HabilidadeServiceImpl extends GenericService implements HabilidadeS
         validarAcessoFicha(token, idFicha);
 
         Habilidade habilidade = repository.procurarPorId(idFicha, idHabilidade)
-                .orElseThrow(() -> new NotFoundException("Ficha não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Habilidade não encontrada"));
 
         return mapper.toHabilidadeDto(habilidade);
     }
