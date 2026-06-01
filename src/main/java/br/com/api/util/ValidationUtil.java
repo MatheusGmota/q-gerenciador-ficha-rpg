@@ -1,4 +1,4 @@
-package br.com.api.domain.util;
+package br.com.api.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

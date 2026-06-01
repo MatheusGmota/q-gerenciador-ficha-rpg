@@ -1,5 +1,6 @@
 package br.com.api.domain.entities.subcollections;
 
+import br.com.api.annotation.FirestoreCollection;
 import com.google.cloud.firestore.annotation.DocumentId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FirestoreCollection("habilidades")
 public class Habilidade {
-    public static final String COLLECTION_NAME = "habilidades";
 
     @DocumentId
     private String id;
