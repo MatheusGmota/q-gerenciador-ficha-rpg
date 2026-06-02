@@ -30,7 +30,10 @@ public class HabilidadeServiceImpl extends AbstractSubcollectionService implemen
 
         validarAcessoFicha(token, idFicha);
 
-        return repository.procurarTudo(idFicha)
+        List<Habilidade> habilidades = repository.procurarTudo(idFicha);
+        if (habilidades.isEmpty()) return List.of();
+
+        return habilidades
                 .stream()
                 .map(mapper::toHabilidadeDto)
                 .toList();
