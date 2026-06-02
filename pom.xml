@@ -120,7 +120,15 @@
                             <artifactId>lombok</artifactId>
                             <version>1.18.42</version>
                         </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.6.3</version>
+                        </path>
                     </annotationProcessorPaths>
+                    <compilerArgs>
+                        <arg>-Amapstruct.defaultComponentModel=jakarta-cdi</arg>
+                    </compilerArgs>
                     <parameters>true</parameters>
                 </configuration>
             </plugin>

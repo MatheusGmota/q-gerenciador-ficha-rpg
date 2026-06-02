@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.CDI, uses = { AtributosMapper.class, DescricaoMapper.class })
+@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA_CDI, uses = { AtributosMapper.class, DescricaoMapper.class })
 public interface AgenteMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -23,7 +23,7 @@ public interface AgenteMapper {
 
     @Mapping(target = "reducaoBloqueio", ignore = true)
     @Mapping(target = "esforcoPorRodada", ignore = true)
-    @Mapping(target = "deslocamento", defaultValue = "9m/6q")
+    @Mapping(target = "deslocamento", ignore = true)
 
     @Mapping(target = "pontosVida", ignore = true)
     @Mapping(target = "pontosEsforco", ignore = true)

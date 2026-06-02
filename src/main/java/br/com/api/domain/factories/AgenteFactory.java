@@ -31,6 +31,8 @@ public class AgenteFactory {
 
         agente.setReducaoBloqueio(0);
 
+        agente.setDeslocamento("9m/6q");
+
         agente.setEsforcoPorRodada(
                 calcularEsforcoPorRodada(agente.getNivelExposicao())
         );
