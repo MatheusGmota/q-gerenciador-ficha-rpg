@@ -30,14 +30,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO getUser(String uid) throws FirebaseAuthException {
-        UserRecord user = repository.obterPorId(uid);
-        return mapper.fromUserRecord(user);
+        UserRecord userRecord = repository.obterPorId(uid);
+        String userRole = getUserRole(userRecord);
+        return mapper.fromUserRecord(userRecord, userRole);
     }
 
     @Override
     public UserResponseDTO getLoggedUser(String token) throws FirebaseAuthException {
         UserRecord userRecord = repository.obterUsuarioLogado(token);
-        return mapper.fromUserRecord(userRecord);
+        String userRole = getUserRole(userRecord);
+        return mapper.fromUserRecord(userRecord, userRole);
     }
 
     @Override
@@ -87,5 +89,16 @@ public class UserServiceImpl implements UserService {
         UserRole role = isAdmin ? UserRole.ADMIN : UserRole.USER;
 
         return authService.loginComEmailESenha(request.email(), request.password(), user.getDisplayName(), role);
+    }
+
+    private String getUserRole(UserRecord userRecord) {
+        String userRole = UserRole.USER.toString();
+        Object admin = userRecord.getCustomClaims().get("admin");
+        if (admin != null) {
+            if (Boolean.TRUE.equals(admin)) {
+                userRole = UserRole.ADMIN.toString();
+            }
+        }
+        return userRole;
     }
 }

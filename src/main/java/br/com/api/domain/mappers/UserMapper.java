@@ -14,7 +14,8 @@ public interface UserMapper {
     @Mapping(target = "photoUrl", ignore = true)
     User fromCreateUserDTO(CreateUserDTO dto);
 
-    @Mapping(target = "username", source = "displayName")
-    @Mapping(target = "telefone", source = "phoneNumber")
-    UserResponseDTO fromUserRecord(UserRecord user);
+    @Mapping(target = "username", source = "user.displayName")
+    @Mapping(target = "telefone",  source = "user.phoneNumber")
+    @Mapping(target = "userRole", source = "userRole")
+    UserResponseDTO fromUserRecord(UserRecord user, String userRole);
 }

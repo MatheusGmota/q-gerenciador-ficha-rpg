@@ -5,6 +5,7 @@ public record UserResponseDTO(
         String username,
         String email,
         String telefone,
-        String photoUrl
+        String photoUrl,
+        String userRole
 ) {
 }
