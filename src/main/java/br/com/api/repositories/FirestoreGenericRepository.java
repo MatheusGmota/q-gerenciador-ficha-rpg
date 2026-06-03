@@ -6,6 +6,7 @@ import com.google.cloud.firestore.*;
 import jakarta.inject.Inject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -54,6 +55,10 @@ public abstract class FirestoreGenericRepository<T> {
 
     public void editar(String idFicha, String id, T entity) throws ExecutionException, InterruptedException {
         getSubCollection(idFicha).document(id).set(entity).get();
+    }
+
+    public void atualizar(String idFicha, String id, Map<String, Object> campos) throws ExecutionException, InterruptedException {
+        getSubCollection(idFicha).document(id).update(campos).get();
     }
 
 
