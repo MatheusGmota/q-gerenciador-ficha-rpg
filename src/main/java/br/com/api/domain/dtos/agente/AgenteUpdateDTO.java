@@ -7,7 +7,7 @@ import br.com.api.domain.enums.TipoElemento;
 public record AgenteUpdateDTO(
         String imagemUrl,
         String nome,
-        int idade,
+        Integer idade,
 
         StatusDTO pontosVida,
         StatusDTO pontosSanidade,
@@ -16,11 +16,11 @@ public record AgenteUpdateDTO(
         AtributosRequestDTO atributos,
         DescricaoRequestDTO descricao,
 
-        int nivelExposicao,
-        int esforcoPorRodada,
-        int defesa,
-        int defesaEsquiva,
-        int reducaoBloqueio,
+        Integer nivelExposicao,
+        Integer esforcoPorRodada,
+        Integer defesa,
+        Integer defesaEsquiva,
+        Integer reducaoBloqueio,
 
         String protecoes,
         String resistencias,

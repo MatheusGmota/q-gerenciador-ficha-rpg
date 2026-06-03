@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 
 import static br.com.api.infra.security.AuthUtil.extractBearerToken;
 
-@Path("/api/v1/agentes/{idFicha}/inventarios")
+@Path("/api/v1/agentes/{idFicha}/inventario")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
 public class InventarioController {
@@ -50,7 +50,7 @@ public class InventarioController {
 
     // ========== ITENS ==========
     @GET
-    @Path("/{idItem}")
+    @Path("/itens/{idItem}")
     public Response getItem(
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
@@ -66,6 +66,7 @@ public class InventarioController {
     }
 
     @POST
+    @Path("/itens")
     public Response postItem(
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
@@ -81,7 +82,7 @@ public class InventarioController {
     }
 
     @PATCH
-    @Path("/{idItem}")
+    @Path("/itens/{idItem}")
     public Response patchItem(
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
@@ -95,7 +96,7 @@ public class InventarioController {
     }
 
     @DELETE
-    @Path("/{idItem}")
+    @Path("/itens/{idItem}")
     public Response deleteItem (
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
