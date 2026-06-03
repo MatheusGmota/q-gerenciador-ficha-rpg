@@ -5,14 +5,12 @@ import br.com.api.domain.dtos.ritual.RitualResponseDTO;
 import br.com.api.domain.entities.subcollections.Ritual;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.CDI)
+@Mapper()
 public interface RitualMapper {
 
-//    RitualMapper INSTANCE = Mappers.getMapper(RitualMapper.class);
-
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "danoSanidade", source = "danoSanidade", qualifiedByName = "gerarTextoDanoSanidade")
     Ritual toRitual(RitualRequestDTO dto);
 

@@ -5,12 +5,16 @@ import br.com.api.domain.dtos.user.UserResponseDTO;
 import br.com.api.domain.entities.User;
 import com.google.firebase.auth.UserRecord;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
+import org.mapstruct.Mapping;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.CDI)
+@Mapper()
 public interface UserMapper {
 
+    @Mapping(target = "uid", ignore = true)
+    @Mapping(target = "photoUrl", ignore = true)
     User fromCreateUserDTO(CreateUserDTO dto);
 
+    @Mapping(target = "username", source = "displayName")
+    @Mapping(target = "telefone", source = "phoneNumber")
     UserResponseDTO fromUserRecord(UserRecord user);
 }

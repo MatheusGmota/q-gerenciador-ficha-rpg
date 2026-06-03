@@ -5,12 +5,9 @@ import br.com.api.domain.dtos.agente.AgenteResponseDTO;
 import br.com.api.domain.dtos.agente.AgenteResumoResponseDTO;
 import br.com.api.domain.entities.Agente;
 import com.google.cloud.Timestamp;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.JAKARTA_CDI, uses = { AtributosMapper.class, DescricaoMapper.class })
+@Mapper(uses = { AtributosMapper.class, DescricaoMapper.class })
 public interface AgenteMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -28,6 +25,11 @@ public interface AgenteMapper {
     @Mapping(target = "pontosVida", ignore = true)
     @Mapping(target = "pontosEsforco", ignore = true)
     @Mapping(target = "pontosSanidade", ignore = true)
+
+    @Mapping(target = "resistencias", ignore = true)
+    @Mapping(target = "afinidade", ignore = true)
+    @Mapping(target = "protecoes", ignore = true)
+    @Mapping(target = "criadoEm", ignore = true)
     Agente toAgente(String uid, AgenteCreateDTO dto);
 
     @Mapping(target = "criadoEm", source = "criadoEm", qualifiedByName = "timestampToString")
