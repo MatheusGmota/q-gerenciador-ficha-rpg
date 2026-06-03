@@ -26,7 +26,7 @@ public class AgenteRepositoryImpl implements AgenteRepository {
         return db.collection(COLLECTION_NAME);
     }
 
-    private DocumentReference getFichasCollection(String idFicha) {
+    private DocumentReference getFichaDocument(String idFicha) {
         return getCollection().document(idFicha);
     }
 
@@ -75,7 +75,7 @@ public class AgenteRepositoryImpl implements AgenteRepository {
 
     @Override
     public Optional<Agente> obterPorId(String idFicha) throws ExecutionException, InterruptedException {
-        DocumentSnapshot doc = getFichasCollection(idFicha).get().get();
+        DocumentSnapshot doc = getFichaDocument(idFicha).get().get();
 
         if (!doc.exists()) return Optional.empty();
         return Optional.ofNullable(doc.toObject(Agente.class));
@@ -89,12 +89,46 @@ public class AgenteRepositoryImpl implements AgenteRepository {
 
     @Override
     public void alterarFicha(String idFicha, Map<String, Object> campos) throws ExecutionException, InterruptedException {
-        getFichasCollection(idFicha).update(campos).get();
+        getFichaDocument(idFicha).update(campos).get();
     }
 
     @Override
-    public void deletarFicha(String idFicha) {
-        getFichasCollection(idFicha).delete();
+    public void deletarFicha(String idFicha) throws ExecutionException, InterruptedException {
+        DocumentReference document = getFichaDocument(idFicha);
+
+        deletarSubCollections(document, 2);
+        deletarInventario(idFicha);
+
+        document.delete().get();
+    }
+
+    private void deletarInventario(String idFicha) throws ExecutionException, InterruptedException {
+        WriteBatch batch = db.batch();
+        CollectionReference collection = db.collection("inventarios");
+
+        DocumentReference document = collection.document(idFicha);
+        deletarSubCollections(document,2);
+
+        document.delete();
+    }
+
+    private void deletarSubCollections(DocumentReference document, int batchSize) throws ExecutionException, InterruptedException {
+        for (CollectionReference collection : document.listCollections()) {
+            WriteBatch batch = db.batch();
+
+            ApiFuture<QuerySnapshot> future = collection.limit(batchSize).get();
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+            for (QueryDocumentSnapshot doc : documents) {
+                batch.delete(doc.getReference());
+            }
+
+            batch.commit().get();
+
+            if (documents.size() >= batchSize) {
+                deletarSubCollections(document, batchSize);
+            }
+        }
     }
 
 }

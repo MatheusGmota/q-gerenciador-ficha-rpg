@@ -13,7 +13,7 @@ public interface AgenteRepository {
     Optional<Agente> obterPorId(String idFicha) throws ExecutionException, InterruptedException;
     Agente persistirFicha(Agente agente) throws ExecutionException, InterruptedException;
     void alterarFicha(String idFicha, Map<String, Object> campos) throws ExecutionException, InterruptedException;
-    void deletarFicha(String idFicha);
+    void deletarFicha(String idFicha) throws ExecutionException, InterruptedException;
 
     boolean excedeuLimiteMaxFichas(String idUsuario)  throws ExecutionException, InterruptedException;
 }

@@ -9,6 +9,7 @@ import br.com.api.domain.factories.AgenteFactory;
 import br.com.api.domain.mappers.AgenteMapper;
 import br.com.api.repositories.interfaces.AgenteRepository;
 import br.com.api.services.interfaces.AgenteService;
+import br.com.api.services.interfaces.InventarioService;
 import br.com.api.services.validators.FichaAccessValidator;
 import com.google.firebase.auth.FirebaseToken;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -28,19 +29,22 @@ import static br.com.api.util.ValidationUtil.validaCampos;
 public class AgenteServiceImpl implements AgenteService {
 
     @Inject
-    FichaAccessValidator accessValidator;
+    AgenteMapper mapper;
+
+    @Inject
+    AgenteFactory agenteFactory;
 
     @Inject
     AgenteRepository repository;
 
     @Inject
+    FichaAccessValidator accessValidator;
+
+    @Inject
     AuthenticationService authService;
 
     @Inject
-    AgenteMapper mapper;
-
-    @Inject
-    AgenteFactory agenteFactory;
+    InventarioService inventarioService;
 
     @Override
     public List<AgenteResumoResponseDTO> obterTudo(String token) throws ExecutionException, InterruptedException {
@@ -79,6 +83,8 @@ public class AgenteServiceImpl implements AgenteService {
         Agente ficha = repository.persistirFicha(
                 agenteFactory.criar(uid, request)
         );
+
+        inventarioService.inicializar(ficha.getId());
 
         return mapper.toAgenteDto(ficha);
     }
