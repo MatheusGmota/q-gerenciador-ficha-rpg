@@ -34,12 +34,16 @@ public class InventarioFactory {
 
     private Map<String, Integer> inicializarLimiteItens(){
         Map<String, Integer> limites = new HashMap<>();
-        limites.put(CategoriaItem.I.toString(),   2);
-        limites.put(CategoriaItem.II.toString(),  0);
-        limites.put(CategoriaItem.III.toString(), 0);
-        limites.put(CategoriaItem.IV.toString(),  0);
-        limites.put(CategoriaItem.V.toString(),   0);
-        limites.put(CategoriaItem.VI.toString(),  0);
+        for (CategoriaItem catItem : CategoriaItem.values()) {
+            String catItemName = catItem.name().toLowerCase();
+
+            if (catItem.name().equals(CategoriaItem.I.name())) {
+                limites.put(catItemName, 2);
+            }
+
+            else limites.put(catItemName, 0);
+        }
+
         return limites;
     }
 }
