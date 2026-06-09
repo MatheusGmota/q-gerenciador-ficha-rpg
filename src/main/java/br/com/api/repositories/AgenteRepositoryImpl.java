@@ -1,6 +1,7 @@
 package br.com.api.repositories;
 
 import br.com.api.domain.entities.Agente;
+import br.com.api.domain.model.Pericia;
 import br.com.api.repositories.interfaces.AgenteRepository;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -41,6 +42,13 @@ public class AgenteRepositoryImpl implements AgenteRepository {
 
         return documents.size() == MAX_LIMIT_DOCUMENTS;
 
+    }
+
+    @Override
+    public void atualizarPericia(String idFicha, String nomePericia, Pericia pericia) {
+        getCollection()
+                .document(idFicha)
+                .update("pericias." + nomePericia, pericia);
     }
 
     @Override
@@ -103,7 +111,6 @@ public class AgenteRepositoryImpl implements AgenteRepository {
     }
 
     private void deletarInventario(String idFicha) throws ExecutionException, InterruptedException {
-        WriteBatch batch = db.batch();
         CollectionReference collection = db.collection("inventarios");
 
         DocumentReference document = collection.document(idFicha);

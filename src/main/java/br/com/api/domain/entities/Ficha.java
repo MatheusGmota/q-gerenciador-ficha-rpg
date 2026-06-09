@@ -1,6 +1,7 @@
 package br.com.api.domain.entities;
 
 import br.com.api.domain.model.Atributos;
+import br.com.api.domain.model.Pericia;
 import br.com.api.domain.model.Status;
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.annotation.DocumentId;
@@ -8,6 +9,8 @@ import com.google.cloud.firestore.annotation.ServerTimestamp;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -27,6 +30,7 @@ public class Ficha {
 
     private Status pontosVida;
     private Atributos atributos;
+    private Map<String, Pericia> pericias;
 
     @ServerTimestamp
     private Timestamp criadoEm;

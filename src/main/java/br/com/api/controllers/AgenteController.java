@@ -4,6 +4,8 @@ import br.com.api.domain.dtos.agente.AgenteCreateDTO;
 import br.com.api.domain.dtos.agente.AgenteResponseDTO;
 import br.com.api.domain.dtos.agente.AgenteResumoResponseDTO;
 import br.com.api.domain.dtos.agente.AgenteUpdateDTO;
+import br.com.api.domain.dtos.pericias.PericiaUpdateDTO;
+import br.com.api.domain.dtos.pericias.PericiasAtributoDTO;
 import br.com.api.services.interfaces.AgenteService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -91,5 +93,34 @@ public class AgenteController {
         service.deletar(token, idFicha);
 
         return Response.noContent().build();
+    }
+
+    // ================ PERICIAS ====================
+    @GET
+    @Path("/{idFicha}/pericias")
+    public Response getPericias(
+            @HeaderParam("Authorization") String authHeader,
+            @PathParam("idFicha") String idFicha
+    ) throws ExecutionException, InterruptedException {
+        String token = extractBearerToken(authHeader);
+        PericiasAtributoDTO obter = service.obterPericias(token, idFicha);
+        return Response.
+                ok(obter)
+                .build();
+    }
+
+    @PUT
+    @Path("/{idFicha}/pericias")
+    public Response putPericias(
+            @HeaderParam("Authorization") String authHeader,
+            @PathParam("idFicha") String idFicha,
+            @Valid PericiaUpdateDTO request
+    ) throws ExecutionException, InterruptedException {
+        String token = extractBearerToken(authHeader);
+
+        service.atualizarPericia(token, idFicha, request);
+        return Response
+                .noContent()
+                .build();
     }
 }

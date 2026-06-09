@@ -3,11 +3,16 @@ package br.com.api.domain.factories;
 import br.com.api.domain.dtos.agente.AgenteCreateDTO;
 import br.com.api.domain.entities.Agente;
 import br.com.api.domain.enums.TipoClasse;
+import br.com.api.domain.enums.TipoPericia;
 import br.com.api.domain.mappers.AgenteMapper;
 import br.com.api.domain.model.Atributos;
+import br.com.api.domain.model.Pericia;
 import br.com.api.domain.model.Status;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @ApplicationScoped
 public class AgenteFactory {
@@ -46,6 +51,8 @@ public class AgenteFactory {
         agente.setPontosSanidade(
                 calcularPontosSanidade(dto.classe())
         );
+
+        agente.setPericias(iniciarPericias());
 
         return agente;
     }
@@ -94,5 +101,23 @@ public class AgenteFactory {
         else if (classe.equals(TipoClasse.MUNDANO)) total = 8;
 
         return new Status(total, total);
+    }
+
+    private static Map<String, Pericia> iniciarPericias() {
+        Map<String, Pericia> pericias = new HashMap<>();
+
+        for (TipoPericia tipo : TipoPericia.values()) {
+            pericias.put(
+                    tipo.name().toLowerCase(),
+                    new Pericia(
+                            false,
+                            0,
+                            0,
+                            null
+                    )
+            );
+        }
+
+        return pericias;
     }
 }

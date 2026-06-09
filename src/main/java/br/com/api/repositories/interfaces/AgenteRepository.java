@@ -1,6 +1,7 @@
 package br.com.api.repositories.interfaces;
 
 import br.com.api.domain.entities.Agente;
+import br.com.api.domain.model.Pericia;
 
 import java.util.List;
 import java.util.Map;
@@ -16,4 +17,6 @@ public interface AgenteRepository {
     void deletarFicha(String idFicha) throws ExecutionException, InterruptedException;
 
     boolean excedeuLimiteMaxFichas(String idUsuario)  throws ExecutionException, InterruptedException;
+
+    void atualizarPericia(String idFicha, String chave, Pericia pericia);
 }
