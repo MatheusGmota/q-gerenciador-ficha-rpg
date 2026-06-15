@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import static br.com.api.util.ValidationUtil.validaCampos;
+import static br.com.api.services.validators.ValidationUtil.validaCampos;
 import static java.util.stream.Collectors.*;
 
 @ApplicationScoped

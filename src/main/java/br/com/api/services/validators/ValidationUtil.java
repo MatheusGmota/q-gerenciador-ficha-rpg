@@ -1,4 +1,4 @@
-package br.com.api.util;
+package br.com.api.services.validators;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,11 +22,7 @@ public class ValidationUtil {
         return updateMap;
     }
 
-    private static void flatten(
-            Map<String, Object> origem,
-            String prefixo,
-            Map<String, Object> destino) {
-
+    private static void flatten(Map<String, Object> origem, String prefixo, Map<String, Object> destino) {
         for (var entry : origem.entrySet()) {
             String chave = prefixo.isEmpty()
                     ? entry.getKey()
