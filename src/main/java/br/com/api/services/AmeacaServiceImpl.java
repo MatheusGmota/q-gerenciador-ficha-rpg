@@ -1,21 +1,18 @@
 package br.com.api.services;
 
-import br.com.api.domain.dtos.agente.AgenteCreateDTO;
-import br.com.api.domain.dtos.agente.AgenteResponseDTO;
-import br.com.api.domain.dtos.agente.AgenteResumoResponseDTO;
-import br.com.api.domain.dtos.agente.AgenteUpdateDTO;
+import br.com.api.domain.dtos.ameaca.AmeacaResponseDTO;
+import br.com.api.domain.dtos.ameaca.AmeacaResumoResponseDTO;
+import br.com.api.domain.dtos.ameaca.AmeacaUpdateDTO;
 import br.com.api.domain.dtos.pericias.PericiaDTO;
 import br.com.api.domain.dtos.pericias.PericiaUpdateDTO;
-import br.com.api.domain.dtos.pericias.PericiasAtributoDTO;
-import br.com.api.domain.entities.Agente;
+import br.com.api.domain.entities.Ameaca;
 import br.com.api.domain.enums.TipoAtributo;
 import br.com.api.domain.enums.TipoPericia;
-import br.com.api.domain.factories.AgenteFactory;
-import br.com.api.domain.mappers.AgenteMapper;
+import br.com.api.domain.factories.AmeacaFactory;
+import br.com.api.domain.mappers.AmeacaMapper;
 import br.com.api.domain.model.Pericia;
-import br.com.api.repositories.interfaces.AgenteRepository;
-import br.com.api.services.interfaces.AgenteService;
-import br.com.api.services.interfaces.InventarioService;
+import br.com.api.repositories.interfaces.AmeacaRepository;
+import br.com.api.services.interfaces.AmeacaService;
 import br.com.api.services.validators.FichaAccessValidator;
 import com.google.firebase.auth.FirebaseToken;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -34,16 +31,16 @@ import static java.util.stream.Collectors.*;
 
 @ApplicationScoped
 @Slf4j
-public class AgenteServiceImpl implements AgenteService {
+public class AmeacaServiceImpl implements AmeacaService {
 
     @Inject
-    AgenteMapper mapper;
+    AmeacaMapper mapper;
 
     @Inject
-    AgenteFactory agenteFactory;
+    AmeacaFactory ameacaFactory;
 
     @Inject
-    AgenteRepository repository;
+    AmeacaRepository repository;
 
     @Inject
     FichaAccessValidator accessValidator;
@@ -51,55 +48,49 @@ public class AgenteServiceImpl implements AgenteService {
     @Inject
     AuthenticationService authService;
 
-    @Inject
-    InventarioService inventarioService;
-
     @Override
-    public List<AgenteResumoResponseDTO> obterTudo(String token) throws ExecutionException, InterruptedException {
+    public List<AmeacaResumoResponseDTO> obterTudo(String token) throws ExecutionException, InterruptedException {
         FirebaseToken decoded = authService.validarToken(token);
         if (Boolean.FALSE.equals(decoded.getClaims().get("admin"))) {
             throw new WebApplicationException("Usuário não possui permissão para acessar essa rota", Response.Status.FORBIDDEN);
         }
 
         return repository.obterTodasFichas()
-                .stream().map(mapper::toAgenteResumoDto)
+                .stream().map(mapper::toAmeacaResumoDto)
                 .toList();
     }
 
     @Override
-    public List<AgenteResumoResponseDTO> obterPorIdUsuario(String token) throws ExecutionException, InterruptedException {
+    public List<AmeacaResumoResponseDTO> obterPorIdUsuario(String token) throws ExecutionException, InterruptedException {
         String uid = authService.validarToken(token).getUid(); // validar token
 
         return repository.obterFichasPorIdUsuario(uid)
-                .stream().map(mapper::toAgenteResumoDto)
+                .stream().map(mapper::toAmeacaResumoDto)
                 .toList();
     }
 
     @Override
-    public AgenteResponseDTO obter(String token, String idFicha) throws ExecutionException, InterruptedException {
-        Agente ficha = accessValidator.validarAcessoFicha(token, idFicha);
+    public AmeacaResponseDTO obter(String token, String idFicha) throws ExecutionException, InterruptedException {
+        Ameaca ficha = accessValidator.validarAcessoFichaAmeaca(token, idFicha);
 
-        return mapper.toAgenteDto(ficha);
+        return mapper.toAmeacaDto(ficha);
     }
 
-    @Override
-    public AgenteResponseDTO criar(String token, AgenteCreateDTO request) throws ExecutionException, InterruptedException {
+    public AmeacaResponseDTO criar(String token) throws ExecutionException, InterruptedException {
         String uid = authService.validarToken(token).getUid();
 
         if (repository.excedeuLimiteMaxFichas(uid)) throw new WebApplicationException("Usuário atingiu o limite máximo de fichas");
 
-        Agente ficha = repository.persistirFicha(
-                agenteFactory.criar(uid, request)
+        Ameaca ficha = repository.persistirFicha(
+                ameacaFactory.criar(uid)
         );
 
-        inventarioService.inicializar(ficha.getId());
-
-        return mapper.toAgenteDto(ficha);
+        return mapper.toAmeacaDto(ficha);
     }
 
     @Override
-    public void atualizar(String token, String idFicha, AgenteUpdateDTO request) throws ExecutionException, InterruptedException {
-        accessValidator.validarAcessoFicha(token, idFicha);
+    public void atualizar(String token, String idFicha, AmeacaUpdateDTO request) throws ExecutionException, InterruptedException {
+        accessValidator.validarAcessoFichaAmeaca(token, idFicha);
 
         Map<String, Object> camposValidados = validaCampos(request);
         repository.alterarFicha(idFicha, camposValidados);
@@ -107,21 +98,13 @@ public class AgenteServiceImpl implements AgenteService {
 
     @Override
     public void deletar(String token, String idFicha) throws ExecutionException, InterruptedException {
-        accessValidator.validarAcessoFicha(token, idFicha);
+        accessValidator.validarAcessoFichaAmeaca(token, idFicha);
         repository.deletarFicha(idFicha);
     }
 
     @Override
-    public PericiasAtributoDTO obterPericias(String token, String idFicha) throws ExecutionException, InterruptedException {
-        Agente ficha = accessValidator.validarAcessoFicha(token, idFicha);
-
-        Map<TipoAtributo, List<PericiaDTO>> agrupadas = agruparPorAtributo(ficha.getPericias());
-        return mapper.toPericiasAtributoDto(agrupadas);
-    }
-
-    @Override
     public void atualizarPericia(String token, String idFicha, PericiaUpdateDTO request) throws ExecutionException, InterruptedException {
-        Agente ficha = accessValidator.validarAcessoFicha(token, idFicha);
+        Ameaca ficha = accessValidator.validarAcessoFichaAmeaca(token, idFicha);
 
         String chave = request.nome().name().toLowerCase();
         if (!ficha.getPericias().containsKey(chave)) {

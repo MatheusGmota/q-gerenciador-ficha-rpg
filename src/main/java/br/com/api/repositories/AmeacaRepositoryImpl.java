@@ -1,8 +1,8 @@
 package br.com.api.repositories;
 
-import br.com.api.domain.entities.Agente;
+import br.com.api.domain.entities.Ameaca;
 import br.com.api.domain.model.Pericia;
-import br.com.api.repositories.interfaces.AgenteRepository;
+import br.com.api.repositories.interfaces.AmeacaRepository;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,8 +16,8 @@ import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @ApplicationScoped
-public class AgenteRepositoryImpl implements AgenteRepository {
-    private static final String COLLECTION_NAME = "agentes";
+public class AmeacaRepositoryImpl implements AmeacaRepository {
+    private static final String COLLECTION_NAME = "ameacas";
     private static final int MAX_LIMIT_DOCUMENTS = 10;
 
     @Inject
@@ -52,7 +52,7 @@ public class AgenteRepositoryImpl implements AgenteRepository {
     }
 
     @Override
-    public List<Agente> obterFichasPorIdUsuario(String idUsuario) throws ExecutionException, InterruptedException {
+    public List<Ameaca> obterFichasPorIdUsuario(String idUsuario) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = getCollection()
                 .whereEqualTo("idUsuario", idUsuario)
                 .orderBy("criadoEm")
@@ -64,12 +64,12 @@ public class AgenteRepositoryImpl implements AgenteRepository {
 
         return snapshot.getDocuments()
                 .stream()
-                .map(doc -> doc.toObject(Agente.class))
+                .map(doc -> doc.toObject(Ameaca.class))
                 .toList();
     }
 
     @Override
-    public List<Agente> obterTodasFichas() throws ExecutionException, InterruptedException {
+    public List<Ameaca> obterTodasFichas() throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = getCollection().get();
 
         QuerySnapshot snapshot = query.get();
@@ -77,22 +77,22 @@ public class AgenteRepositoryImpl implements AgenteRepository {
 
         return snapshot
                 .getDocuments()
-                .stream().map(doc -> doc.toObject(Agente.class))
+                .stream().map(doc -> doc.toObject(Ameaca.class))
                 .toList();
     }
 
     @Override
-    public Optional<Agente> obterPorId(String idFicha) throws ExecutionException, InterruptedException {
+    public Optional<Ameaca> obterPorId(String idFicha) throws ExecutionException, InterruptedException {
         DocumentSnapshot doc = getFichaDocument(idFicha).get().get();
 
         if (!doc.exists()) return Optional.empty();
-        return Optional.ofNullable(doc.toObject(Agente.class));
+        return Optional.ofNullable(doc.toObject(Ameaca.class));
     }
 
     @Override
-    public Agente persistirFicha(Agente agente) throws ExecutionException, InterruptedException {
+    public Ameaca persistirFicha(Ameaca agente) throws ExecutionException, InterruptedException {
         DocumentReference doc = getCollection().add(agente).get();
-        return doc.get().get().toObject(Agente.class);
+        return doc.get().get().toObject(Ameaca.class);
     }
 
     @Override
@@ -105,18 +105,8 @@ public class AgenteRepositoryImpl implements AgenteRepository {
         DocumentReference document = getFichaDocument(idFicha);
 
         deletarSubCollections(document, 2);
-        deletarInventario(idFicha);
 
         document.delete().get();
-    }
-
-    private void deletarInventario(String idFicha) throws ExecutionException, InterruptedException {
-        CollectionReference collection = db.collection("inventarios");
-
-        DocumentReference document = collection.document(idFicha);
-        deletarSubCollections(document,2);
-
-        document.delete();
     }
 
     private void deletarSubCollections(DocumentReference document, int batchSize) throws ExecutionException, InterruptedException {

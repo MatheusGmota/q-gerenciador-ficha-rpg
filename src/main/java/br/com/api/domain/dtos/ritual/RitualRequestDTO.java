@@ -1,6 +1,7 @@
 package br.com.api.domain.dtos.ritual;
 
 import br.com.api.domain.enums.TipoElemento;
+import br.com.api.domain.model.CustoRitual;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -9,37 +10,38 @@ public record RitualRequestDTO(
         @NotNull(message = "Nome é obrigatório")
         String nome,
 
-        @NotNull(message = "Nome é obrigatório")
+        @NotNull(message = "TipoElemento é obrigatório")
+        TipoElemento tipoElemento,
+
+        CustoRitual custoRitual,
+
+        @NotNull(message = "Execucao é obrigatório")
+        String execucao,
+
+        @NotNull(message = "Alcance é obrigatório")
         String alcance,
 
-        @NotNull(message = "Nome é obrigatório")
+        @NotNull(message = "Alvo é obrigatório")
         String alvo,
 
-        @Min(1)
-        @Max(4)
-        @NotNull(message = "Nome é obrigatório")
-        int circulo,
+        @NotNull(message = "Duração é obrigatório")
+        String duracao,
 
-        @NotNull(message = "Nome é obrigatório")
-        String danoSanidade,
+        @NotNull(message = "Resistência é obrigatório")
+        String resistencia,
 
-        @NotNull(message = "Nome é obrigatório")
+        @NotNull(message = "Descrição é obrigatório")
         String descricao,
 
         @Min(0)
-        @NotNull(message = "Nome é obrigatório")
-        int dtRitual,
+        @NotNull(message = "dtRitual é obrigatório")
+        Integer dtRitual,
 
-        @NotNull(message = "Nome é obrigatório")
-        String duracao,
+        String danoSanidade,
 
-        @NotNull(message = "Nome é obrigatório")
-        String execucao,
-
-        @NotNull(message = "Nome é obrigatório")
-        String resistencia,
-
-        @NotNull(message = "Nome é obrigatório")
-        TipoElemento tipoElemento
+        @Max(4)
+        @Min(1)
+        @NotNull(message = "Círculo é obrigatório")
+        Integer circulo
 ) {
 }

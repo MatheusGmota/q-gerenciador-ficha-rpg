@@ -1,17 +1,20 @@
 package br.com.api.domain.dtos.ritual;
 
+import br.com.api.domain.model.CustoRitual;
+
 public record RitualResponseDTO(
         String id,
         String nome,
+        String tipoElemento,
+        CustoRitual custoRitual,
+        String execucao,
         String alcance,
         String alvo,
-        int circulo,
-        String danoSanidade,
+        String duracao,
+        String resistencia,
         String descricao,
         int dtRitual,
-        String duracao,
-        String execucao,
-        String resistencia,
-        String tipoElemento
+        String danoSanidade,
+        int circulo
 ) {
 }
