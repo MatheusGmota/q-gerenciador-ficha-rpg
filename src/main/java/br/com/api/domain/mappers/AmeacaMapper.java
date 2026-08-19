@@ -16,6 +16,7 @@ public interface AmeacaMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "idUsuario", source = "uid")
+    @Mapping(target = "pericias", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     Ameaca toAmeaca(String uid, AmeacaUpdateDTO dto);
 
