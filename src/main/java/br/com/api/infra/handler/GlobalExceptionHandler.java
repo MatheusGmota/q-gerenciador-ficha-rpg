@@ -1,5 +1,6 @@
 package br.com.api.infra.handler;
 
+import br.com.api.domain.exceptions.ConflictException;
 import com.google.firebase.auth.FirebaseAuthException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -28,13 +29,18 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
             return build(Response.Status.NOT_FOUND, nfe.getLocalizedMessage());
         }
 
+        if (ex instanceof ConflictException ce) {
+            log.error("ConflictException: {}", ex.getMessage());
+            return build(Response.Status.CONFLICT, ce.getLocalizedMessage());
+        }
+
         if (ex instanceof IllegalArgumentException ia) {
             log.error("IllegalArgumentException: {}", ex.getMessage(),ex);
             return build(Response.Status.BAD_REQUEST, ia.getLocalizedMessage());
         }
 
         if (ex instanceof ExecutionException exc) {
-            log.error("ExecutionException: {}", ex.getMessage(),ex);
+            log.error("ExecutionException: {}", ex.getMessage(), ex);
             return build(Response.Status.INTERNAL_SERVER_ERROR, exc.getLocalizedMessage());
         }
 

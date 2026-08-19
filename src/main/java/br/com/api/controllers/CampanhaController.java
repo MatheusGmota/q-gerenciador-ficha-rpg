@@ -4,6 +4,8 @@ import br.com.api.domain.dtos.campanha.CampanhaCreateDTO;
 import br.com.api.domain.dtos.campanha.CampanhaResponseDTO;
 import br.com.api.domain.dtos.campanha.CampanhaResumoResponseDTO;
 import br.com.api.domain.dtos.campanha.CampanhaUpdateDTO;
+import br.com.api.domain.dtos.convite.ConviteCreateDTO;
+import br.com.api.domain.dtos.convite.ConviteResponseDTO;
 import br.com.api.domain.dtos.membro.MembroResponseDTO;
 import br.com.api.services.interfaces.CampanhaService;
 import jakarta.inject.Inject;
@@ -48,7 +50,7 @@ public class CampanhaController {
     @POST
     public Response cadastrarCampanha(
             @HeaderParam("Authorization") String authHeader,
-            CampanhaCreateDTO request)
+            @Valid CampanhaCreateDTO request)
             throws ExecutionException, InterruptedException {
 
         String token = extractBearerToken(authHeader);
@@ -112,5 +114,19 @@ public class CampanhaController {
         service.removerMembro(token, id, idUsuario);
 
         return Response.noContent().build();
+    }
+
+    @POST
+    @Path("/{id}/convites")
+    public Response gerarConvite(
+            @HeaderParam("Authorization") String authHeader,
+            @PathParam("id") String id,
+            @Valid ConviteCreateDTO request)
+            throws ExecutionException, InterruptedException {
+
+        String token = extractBearerToken(authHeader);
+        ConviteResponseDTO response = service.gerarConvite(token, id, request);
+
+        return Response.status(201).entity(response).build();
     }
 }

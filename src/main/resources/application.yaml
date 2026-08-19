@@ -21,3 +21,7 @@ google:
     firebase:
       api-key: ${FIREBASE_API_KEY}
       auth: enabled
+
+app:
+  convite:
+    base-url: ${INVITE_BASE_URL}

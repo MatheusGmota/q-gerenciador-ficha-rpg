@@ -1,10 +1,11 @@
 package br.com.api.services.interfaces;
 
-
 import br.com.api.domain.dtos.campanha.CampanhaCreateDTO;
 import br.com.api.domain.dtos.campanha.CampanhaResponseDTO;
 import br.com.api.domain.dtos.campanha.CampanhaResumoResponseDTO;
 import br.com.api.domain.dtos.campanha.CampanhaUpdateDTO;
+import br.com.api.domain.dtos.convite.ConviteCreateDTO;
+import br.com.api.domain.dtos.convite.ConviteResponseDTO;
 import br.com.api.domain.dtos.membro.MembroResponseDTO;
 
 import java.util.List;
@@ -20,4 +21,8 @@ public interface CampanhaService {
 
     List<MembroResponseDTO> obterMembros(String token, String idCampanha) throws ExecutionException, InterruptedException;
     void removerMembro(String token, String idCampanha, String idUsuarioAlvo) throws ExecutionException, InterruptedException;
+
+    ConviteResponseDTO gerarConvite(String token, String idCampanha, ConviteCreateDTO request) throws ExecutionException, InterruptedException;
+
+    MembroResponseDTO entrarPorConvite(String token, String tokenConvite) throws ExecutionException, InterruptedException;
 }
