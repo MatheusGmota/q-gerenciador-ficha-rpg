@@ -5,6 +5,8 @@ import br.com.api.domain.dtos.ameaca.AmeacaResumoResponseDTO;
 import br.com.api.domain.dtos.ameaca.AmeacaUpdateDTO;
 import br.com.api.domain.dtos.pericias.PericiaUpdateDTO;
 import br.com.api.services.interfaces.AmeacaService;
+import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -14,11 +16,10 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static br.com.api.infra.security.AuthUtil.extractBearerToken;
-
 @Path("/api/v1/ameacas")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
+@Authenticated
 public class AmeacaController {
 
     @Inject
@@ -26,40 +27,33 @@ public class AmeacaController {
 
     @GET
     @Path("/{idFicha}")
-    public Response getById(
-            @HeaderParam("Authorization") String authHeader,
-            @PathParam("idFicha") String idFicha) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        AmeacaResponseDTO obter = service.obter(token, idFicha);
+    public Response getById(@PathParam("idFicha") String idFicha) throws ExecutionException, InterruptedException {
+
+        AmeacaResponseDTO obter = service.obter(idFicha);
 
         return Response.ok(obter).build();
     }
 
     @GET
     @Path("/usuario")
-    public Response getAllByUserId(
-            @HeaderParam("Authorization") String authHeader
-    ) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        List<AmeacaResumoResponseDTO> obter = service.obterPorIdUsuario(token);
+    public Response getAllByUserId() throws ExecutionException, InterruptedException {
+
+        List<AmeacaResumoResponseDTO> obter = service.obterPorIdUsuario();
 
         return Response.ok(obter).build();
     }
 
     @GET
-    public Response getAll(
-            @HeaderParam("Authorization") String authHeader) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        List<AmeacaResumoResponseDTO> obter = service.obterTudo(token);
+    @RolesAllowed("admin")
+    public Response getAll() throws ExecutionException, InterruptedException {
+        List<AmeacaResumoResponseDTO> obter = service.obterTudo();
 
         return Response.ok(obter).build();
     }
 
     @POST
-    public Response post(@HeaderParam("Authorization") String authHeader) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        AmeacaResponseDTO criar = service.criar(token);
-
+    public Response post() throws ExecutionException, InterruptedException {
+        AmeacaResponseDTO criar = service.criar();
         return Response
                 .status(Response.Status.CREATED)
                 .entity(criar)
@@ -68,25 +62,23 @@ public class AmeacaController {
 
     @PATCH
     @Path("/{idFicha}")
-    public Response patch (
-            @HeaderParam("Authorization") String authHeader,
+    public Response patch(
             @PathParam("idFicha") String idFicha,
             @Valid AmeacaUpdateDTO request
     ) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.atualizar(token, idFicha, request);
+
+        service.atualizar(idFicha, request);
 
         return Response.ok().build();
     }
 
     @DELETE
     @Path("/{idFicha}")
-    public Response delete (
-            @HeaderParam("Authorization") String authHeader,
+    public Response delete(
             @PathParam("idFicha") String idFicha
     ) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.deletar(token, idFicha);
+
+        service.deletar(idFicha);
 
         return Response.noContent().build();
     }
@@ -94,13 +86,12 @@ public class AmeacaController {
     @PUT
     @Path("/{idFicha}/pericias")
     public Response putPericias(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @Valid PericiaUpdateDTO request
     ) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
 
-        service.atualizarPericia(token, idFicha, request);
+
+        service.atualizarPericia(idFicha, request);
         return Response
                 .noContent()
                 .build();

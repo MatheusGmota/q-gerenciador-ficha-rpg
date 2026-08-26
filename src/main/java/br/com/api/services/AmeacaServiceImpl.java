@@ -11,15 +11,14 @@ import br.com.api.domain.enums.TipoPericia;
 import br.com.api.domain.factories.AmeacaFactory;
 import br.com.api.domain.mappers.AmeacaMapper;
 import br.com.api.domain.model.Pericia;
+import br.com.api.infra.security.FirebaseUserPrincipal;
 import br.com.api.repositories.interfaces.AmeacaRepository;
 import br.com.api.services.interfaces.AmeacaService;
 import br.com.api.services.validators.FichaAccessValidator;
-import com.google.firebase.auth.FirebaseToken;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -46,23 +45,21 @@ public class AmeacaServiceImpl implements AmeacaService {
     FichaAccessValidator accessValidator;
 
     @Inject
+    FirebaseUserPrincipal currentUser;
+
+    @Inject
     AuthenticationService authService;
 
     @Override
-    public List<AmeacaResumoResponseDTO> obterTudo(String token) throws ExecutionException, InterruptedException {
-        FirebaseToken decoded = authService.validarToken(token);
-        if (Boolean.FALSE.equals(decoded.getClaims().get("admin"))) {
-            throw new WebApplicationException("Usuário não possui permissão para acessar essa rota", Response.Status.FORBIDDEN);
-        }
-
+    public List<AmeacaResumoResponseDTO> obterTudo() throws ExecutionException, InterruptedException {
         return repository.obterTodasFichas()
                 .stream().map(mapper::toAmeacaResumoDto)
                 .toList();
     }
 
     @Override
-    public List<AmeacaResumoResponseDTO> obterPorIdUsuario(String token) throws ExecutionException, InterruptedException {
-        String uid = authService.validarToken(token).getUid(); // validar token
+    public List<AmeacaResumoResponseDTO> obterPorIdUsuario() throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
 
         return repository.obterFichasPorIdUsuario(uid)
                 .stream().map(mapper::toAmeacaResumoDto)
@@ -70,14 +67,14 @@ public class AmeacaServiceImpl implements AmeacaService {
     }
 
     @Override
-    public AmeacaResponseDTO obter(String token, String idFicha) throws ExecutionException, InterruptedException {
-        Ameaca ficha = accessValidator.validarAcessoFichaAmeaca(token, idFicha);
+    public AmeacaResponseDTO obter(String idFicha) throws ExecutionException, InterruptedException {
+        Ameaca ficha = accessValidator.validarAcessoFichaAmeaca(idFicha);
 
         return mapper.toAmeacaDto(ficha);
     }
 
-    public AmeacaResponseDTO criar(String token) throws ExecutionException, InterruptedException {
-        String uid = authService.validarToken(token).getUid();
+    public AmeacaResponseDTO criar() throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
 
         if (repository.excedeuLimiteMaxFichas(uid)) throw new WebApplicationException("Usuário atingiu o limite máximo de fichas");
 
@@ -89,22 +86,22 @@ public class AmeacaServiceImpl implements AmeacaService {
     }
 
     @Override
-    public void atualizar(String token, String idFicha, AmeacaUpdateDTO request) throws ExecutionException, InterruptedException {
-        accessValidator.validarAcessoFichaAmeaca(token, idFicha);
+    public void atualizar(String idFicha, AmeacaUpdateDTO request) throws ExecutionException, InterruptedException {
+        accessValidator.validarAcessoFichaAmeaca(idFicha);
 
         Map<String, Object> camposValidados = validaCampos(request);
         repository.alterarFicha(idFicha, camposValidados);
     }
 
     @Override
-    public void deletar(String token, String idFicha) throws ExecutionException, InterruptedException {
-        accessValidator.validarAcessoFichaAmeaca(token, idFicha);
+    public void deletar(String idFicha) throws ExecutionException, InterruptedException {
+        accessValidator.validarAcessoFichaAmeaca(idFicha);
         repository.deletarFicha(idFicha);
     }
 
     @Override
-    public void atualizarPericia(String token, String idFicha, PericiaUpdateDTO request) throws ExecutionException, InterruptedException {
-        Ameaca ficha = accessValidator.validarAcessoFichaAmeaca(token, idFicha);
+    public void atualizarPericia(String idFicha, PericiaUpdateDTO request) throws ExecutionException, InterruptedException {
+        Ameaca ficha = accessValidator.validarAcessoFichaAmeaca(idFicha);
 
         String chave = request.nome().name().toLowerCase();
         if (!ficha.getPericias().containsKey(chave)) {

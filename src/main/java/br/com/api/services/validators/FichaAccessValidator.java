@@ -40,7 +40,7 @@ public class FichaAccessValidator {
         return ficha;
     }
 
-    public Ameaca validarAcessoFichaAmeaca(String token, String idFicha) throws ExecutionException, InterruptedException {
+    public Ameaca validarAcessoFichaAmeaca(String idFicha) throws ExecutionException, InterruptedException {
         Ameaca ficha = ameacaRepository.obterPorId(idFicha)
                 .orElseThrow(() -> new NotFoundException("Ficha não encontrada"));
 
