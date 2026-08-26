@@ -2,10 +2,9 @@ package br.com.api.services.validators;
 
 import br.com.api.domain.entities.Agente;
 import br.com.api.domain.entities.Ameaca;
+import br.com.api.infra.security.FirebaseUserPrincipal;
 import br.com.api.repositories.interfaces.AgenteRepository;
 import br.com.api.repositories.interfaces.AmeacaRepository;
-import br.com.api.services.AuthenticationService;
-import com.google.firebase.auth.FirebaseToken;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
@@ -18,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 public class FichaAccessValidator {
 
     @Inject
-    AuthenticationService authService;
+    FirebaseUserPrincipal currentUser;
 
     @Inject
     AgenteRepository repository;
@@ -26,58 +25,31 @@ public class FichaAccessValidator {
     @Inject
     AmeacaRepository ameacaRepository;
 
-    public Agente validarAcessoFicha(
-            String token,
-            String idFicha
-    ) throws ExecutionException, InterruptedException {
 
-        FirebaseToken firebaseToken = authService.validarToken(token);
-        String uid = firebaseToken.getUid();
 
+    public Agente validarAcessoFicha(String idFicha) throws ExecutionException, InterruptedException {
         Agente ficha = repository.obterPorId(idFicha)
-                .orElseThrow(() ->
-                        new NotFoundException("Ficha não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Ficha não encontrada"));
 
-        if (verificaAdmin(firebaseToken)) return ficha;
+        if (currentUser.isAdmin()) return ficha;
 
-        if (!ficha.getIdUsuario().equals(uid)) {
-            throw new WebApplicationException(
-                    "Usuário não autorizado",
-                    Response.Status.FORBIDDEN
-            );
+        if (!ficha.getIdUsuario().equals(currentUser.getUid())) {
+            throw new WebApplicationException("Usuário não autorizado", Response.Status.FORBIDDEN);
         }
 
         return ficha;
     }
 
-    public Ameaca validarAcessoFichaAmeaca(
-            String token,
-            String idFicha
-    ) throws ExecutionException, InterruptedException {
-
-        FirebaseToken firebaseToken = authService.validarToken(token);
-        String uid = firebaseToken.getUid();
-
+    public Ameaca validarAcessoFichaAmeaca(String token, String idFicha) throws ExecutionException, InterruptedException {
         Ameaca ficha = ameacaRepository.obterPorId(idFicha)
-                .orElseThrow(() ->
-                        new NotFoundException("Ficha não encontrada"));
+                .orElseThrow(() -> new NotFoundException("Ficha não encontrada"));
 
-        if (verificaAdmin(firebaseToken)) return ficha;
+        if (currentUser.isAdmin()) return ficha;
 
-        if (!ficha.getIdUsuario().equals(uid)) {
-            throw new WebApplicationException(
-                    "Usuário não autorizado",
-                    Response.Status.FORBIDDEN
-            );
+        if (!ficha.getIdUsuario().equals(currentUser.getUid())) {
+            throw new WebApplicationException("Usuário não autorizado", Response.Status.FORBIDDEN);
         }
 
         return ficha;
-    }
-
-    private boolean verificaAdmin(FirebaseToken firebaseToken) throws ExecutionException, InterruptedException {
-        Object admin = firebaseToken.getClaims().get("admin");
-
-        if (admin == null) return false;
-        return Boolean.TRUE.equals(admin);
     }
 }

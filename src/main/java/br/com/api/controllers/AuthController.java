@@ -4,6 +4,7 @@ import br.com.api.domain.dtos.user.CreateUserDTO;
 import br.com.api.domain.dtos.user.LoginDTO;
 import br.com.api.services.interfaces.UserService;
 import com.google.firebase.auth.FirebaseAuthException;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -13,6 +14,7 @@ import jakarta.ws.rs.core.Response;
 @Path("/api/v1/auth")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
+@PermitAll // login e signup precisam ser acessíveis sem token
 public class AuthController {
 
     @Inject

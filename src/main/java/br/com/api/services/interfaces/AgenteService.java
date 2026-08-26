@@ -11,13 +11,12 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface AgenteService {
-    List<AgenteResumoResponseDTO> obterTudo(String token) throws ExecutionException, InterruptedException;
-    List<AgenteResumoResponseDTO> obterPorIdUsuario(String token) throws ExecutionException, InterruptedException;
-    AgenteResponseDTO obter(String token, String idFicha) throws ExecutionException, InterruptedException;
-    AgenteResponseDTO criar(String token, AgenteCreateDTO request) throws ExecutionException, InterruptedException;
-    void atualizar(String token, String idFicha, AgenteUpdateDTO request) throws ExecutionException, InterruptedException;
-    void deletar(String token, String idFicha) throws ExecutionException, InterruptedException;
-
-    PericiasAtributoDTO obterPericias(String token, String idFicha) throws ExecutionException, InterruptedException;
-    void atualizarPericia(String token, String idFicha, PericiaUpdateDTO request) throws ExecutionException, InterruptedException;
+    List<AgenteResumoResponseDTO> obterTudo() throws ExecutionException, InterruptedException;
+    List<AgenteResumoResponseDTO> obterPorIdUsuario() throws ExecutionException, InterruptedException;
+    AgenteResponseDTO obter(String idFicha) throws ExecutionException, InterruptedException;
+    AgenteResponseDTO criar(AgenteCreateDTO request) throws ExecutionException, InterruptedException;
+    void atualizar(String idFicha, AgenteUpdateDTO request) throws ExecutionException, InterruptedException;
+    void deletar(String idFicha) throws ExecutionException, InterruptedException;
+    PericiasAtributoDTO obterPericias(String idFicha) throws ExecutionException, InterruptedException;
+    void atualizarPericia(String idFicha, PericiaUpdateDTO request) throws ExecutionException, InterruptedException;
 }
