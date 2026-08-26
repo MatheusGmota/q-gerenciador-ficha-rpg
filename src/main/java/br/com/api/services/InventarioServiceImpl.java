@@ -43,8 +43,8 @@ public class InventarioServiceImpl extends AbstractSubcollectionService implemen
     }
 
     @Override
-    public InventarioResponseDTO obterOuCriar(String token, String idInventario) throws ExecutionException, InterruptedException {
-       validarAcessoFicha(token, idInventario);
+    public InventarioResponseDTO obterOuCriar(String idInventario) throws ExecutionException, InterruptedException {
+       validarAcessoFicha(idInventario);
         Inventario inventario = repository.obterPorId(idInventario);
 
         if (inventario == null) {
@@ -58,8 +58,8 @@ public class InventarioServiceImpl extends AbstractSubcollectionService implemen
     }
 
     @Override
-    public void atualizar(String token, String idInventario, InventarioUpdateDTO request) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idInventario);
+    public void atualizar(String idInventario, InventarioUpdateDTO request) throws ExecutionException, InterruptedException {
+        validarAcessoFicha(idInventario);
 
         Map<String, Object> camposValidados = validaCampos(request);
 
@@ -68,8 +68,8 @@ public class InventarioServiceImpl extends AbstractSubcollectionService implemen
 
     // ========== ITEM ==========
     @Override
-    public ItemResponseDTO obterItemPorId(String token, String idInventario, String idItem) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idInventario);
+    public ItemResponseDTO obterItemPorId(String idInventario, String idItem) throws ExecutionException, InterruptedException {
+        validarAcessoFicha(idInventario);
 
         Item item = itemRepository.procurarPorId(idInventario, idItem)
                 .orElseThrow(() -> new NotFoundException("Item não encontrada"));
@@ -78,8 +78,8 @@ public class InventarioServiceImpl extends AbstractSubcollectionService implemen
     }
 
     @Override
-    public ItemResponseDTO adicionarItem(String token, String idInventario, ItemRequestDTO request) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idInventario);
+    public ItemResponseDTO adicionarItem(String idInventario, ItemRequestDTO request) throws ExecutionException, InterruptedException {
+        validarAcessoFicha(idInventario);
 
         Item item = itemRepository.persistir(idInventario, mapper.toItem(request));
 
@@ -87,8 +87,8 @@ public class InventarioServiceImpl extends AbstractSubcollectionService implemen
     }
 
     @Override
-    public void atualizarItem(String token, String idInventario, String idItem, ItemRequestDTO request) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idInventario);
+    public void atualizarItem(String idInventario, String idItem, ItemRequestDTO request) throws ExecutionException, InterruptedException {
+        validarAcessoFicha(idInventario);
         itemRepository.procurarPorId(idInventario, idItem)
                 .orElseThrow(() -> new NotFoundException("Item não encontrado"));
 
@@ -98,8 +98,8 @@ public class InventarioServiceImpl extends AbstractSubcollectionService implemen
     }
 
     @Override
-    public void deletarItem(String token, String idInventario, String idItem) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idInventario);
+    public void deletarItem(String idInventario, String idItem) throws ExecutionException, InterruptedException {
+        validarAcessoFicha(idInventario);
 
         itemRepository.procurarPorId(idInventario, idItem)
                 .orElseThrow(() -> new NotFoundException("Item não encontrado"));

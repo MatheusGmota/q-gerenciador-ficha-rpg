@@ -24,11 +24,10 @@ public class HabilidadeServiceImpl extends AbstractSubcollectionService implemen
 
     @Override
     public List<HabilidadeResponseDTO> obterTudo(
-            String token,
             String idFicha
     ) throws ExecutionException, InterruptedException {
 
-        validarAcessoFicha(token, idFicha);
+        validarAcessoFicha(idFicha);
 
         List<Habilidade> habilidades = repository.procurarTudo(idFicha);
         if (habilidades.isEmpty()) return List.of();
@@ -40,9 +39,9 @@ public class HabilidadeServiceImpl extends AbstractSubcollectionService implemen
     }
 
     @Override
-    public HabilidadeResponseDTO obterPorId(String token, String idFicha, String idHabilidade) throws ExecutionException, InterruptedException {
+    public HabilidadeResponseDTO obterPorId(String idFicha, String idHabilidade) throws ExecutionException, InterruptedException {
 
-        validarAcessoFicha(token, idFicha);
+        validarAcessoFicha(idFicha);
 
         Habilidade habilidade = repository.procurarPorId(idFicha, idHabilidade)
                 .orElseThrow(() -> new NotFoundException("Habilidade não encontrada"));
@@ -52,12 +51,11 @@ public class HabilidadeServiceImpl extends AbstractSubcollectionService implemen
 
     @Override
     public HabilidadeResponseDTO adicionar(
-            String token,
             String idFicha,
             HabilidadeRequestDTO request
     ) throws ExecutionException, InterruptedException {
 
-        validarAcessoFicha(token, idFicha);
+        validarAcessoFicha(idFicha);
 
         Habilidade habilidade =
                 repository.persistir(idFicha, mapper.toHabilidade(request));
@@ -67,13 +65,12 @@ public class HabilidadeServiceImpl extends AbstractSubcollectionService implemen
 
     @Override
     public void atualizar(
-            String token,
             String idFicha,
             String idHabilidade,
             HabilidadeRequestDTO request
     ) throws ExecutionException, InterruptedException {
 
-        validarAcessoFicha(token, idFicha);
+        validarAcessoFicha(idFicha);
 
         if (!repository.existeDocumento(idFicha, idHabilidade))
             throw new NotFoundException("Habilidade não encontrada");
@@ -83,12 +80,11 @@ public class HabilidadeServiceImpl extends AbstractSubcollectionService implemen
 
     @Override
     public void deletar(
-            String token,
             String idFicha,
             String idHabilidade
     ) throws ExecutionException, InterruptedException {
 
-        validarAcessoFicha(token, idFicha);
+        validarAcessoFicha(idFicha);
 
         if (!repository.existeDocumento(idFicha, idHabilidade))
             throw new NotFoundException("Habilidade não encontrada");

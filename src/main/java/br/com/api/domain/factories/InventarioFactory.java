@@ -35,7 +35,7 @@ public class InventarioFactory {
     private Map<String, Integer> inicializarLimiteItens(){
         Map<String, Integer> limites = new HashMap<>();
         for (CategoriaItem catItem : CategoriaItem.values()) {
-            String catItemName = catItem.name().toLowerCase();
+            String catItemName = catItem.name();
 
             if (catItem.name().equals(CategoriaItem.I.name())) {
                 limites.put(catItemName, 2);

@@ -3,6 +3,7 @@ package br.com.api.controllers;
 import br.com.api.domain.dtos.habilidade.HabilidadeRequestDTO;
 import br.com.api.domain.dtos.habilidade.HabilidadeResponseDTO;
 import br.com.api.services.interfaces.HabilidadeService;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -17,6 +18,7 @@ import static br.com.api.infra.security.AuthUtil.extractBearerToken;
 @Path("/api/v1/agentes/{idFicha}/habilidades")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
+@Authenticated
 public class HabilidadeController {
 
     @Inject
@@ -26,8 +28,8 @@ public class HabilidadeController {
     public Response getHabilidades(
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        List<HabilidadeResponseDTO> todasHabilidades = service.obterTudo(token, idFicha);
+
+        List<HabilidadeResponseDTO> todasHabilidades = service.obterTudo(idFicha);
 
         return Response.ok(todasHabilidades).build();
     }
@@ -37,8 +39,8 @@ public class HabilidadeController {
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @Valid HabilidadeRequestDTO request) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        HabilidadeResponseDTO criar = service.adicionar(token, idFicha, request);
+
+        HabilidadeResponseDTO criar = service.adicionar(idFicha, request);
 
         return Response
                 .status(Response.Status.CREATED)
@@ -54,8 +56,8 @@ public class HabilidadeController {
             @PathParam("idHabilidade") String idHabilidade,
             @Valid HabilidadeRequestDTO request
     ) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.atualizar(token, idFicha, idHabilidade, request);
+
+        service.atualizar(idFicha, idHabilidade, request);
 
         return Response.ok().build();
     }
@@ -67,8 +69,8 @@ public class HabilidadeController {
             @PathParam("idFicha") String idFicha,
             @PathParam("idHabilidade") String idHabilidade
     ) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.deletar(token, idFicha, idHabilidade);
+
+        service.deletar(idFicha, idHabilidade);
 
         return Response.noContent().build();
     }

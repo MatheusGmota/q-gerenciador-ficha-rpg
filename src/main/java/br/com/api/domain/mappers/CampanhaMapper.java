@@ -18,6 +18,7 @@ public interface CampanhaMapper {
     @Mapping(target = "idMestre",  ignore = true)
     @Mapping(target = "imagemCapaUrl",  ignore = true)
     @Mapping(target = "maxMembros",  ignore = true)
+    @Mapping(target = "maxFichas",  ignore = true)
     @Mapping(target = "status",  ignore = true)
     @Mapping(target = "criadoEm",  ignore = true)
     Campanha toCampanha(CampanhaCreateDTO dto);

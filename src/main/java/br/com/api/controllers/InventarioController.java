@@ -5,6 +5,7 @@ import br.com.api.domain.dtos.inventario.InventarioUpdateDTO;
 import br.com.api.domain.dtos.inventario.ItemRequestDTO;
 import br.com.api.domain.dtos.inventario.ItemResponseDTO;
 import br.com.api.services.interfaces.InventarioService;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -18,6 +19,7 @@ import static br.com.api.infra.security.AuthUtil.extractBearerToken;
 @Path("/api/v1/agentes/{idFicha}/inventario")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
+@Authenticated
 public class InventarioController {
 
     @Inject
@@ -29,8 +31,7 @@ public class InventarioController {
             @PathParam("idFicha") String idFicha
     ) throws ExecutionException, InterruptedException {
 
-        String token = extractBearerToken(authHeader);
-        InventarioResponseDTO response = service.obterOuCriar(token, idFicha);
+        InventarioResponseDTO response = service.obterOuCriar(idFicha);
 
         return Response.ok(response).build();
     }
@@ -42,8 +43,7 @@ public class InventarioController {
             @Valid InventarioUpdateDTO request
     ) throws ExecutionException, InterruptedException {
 
-        String token = extractBearerToken(authHeader);
-        service.atualizar(token, idFicha, request);
+        service.atualizar(idFicha, request);
 
         return Response.ok().build();
     }
@@ -57,8 +57,7 @@ public class InventarioController {
             @PathParam("idItem") String idItem
     ) throws ExecutionException, InterruptedException {
 
-        String token = extractBearerToken(authHeader);
-        ItemResponseDTO response = service.obterItemPorId(token, idFicha, idItem);
+        ItemResponseDTO response = service.obterItemPorId(idFicha, idItem);
 
         return Response
                 .ok(response)
@@ -72,8 +71,7 @@ public class InventarioController {
             @PathParam("idFicha") String idFicha,
             @Valid ItemRequestDTO request) throws ExecutionException, InterruptedException {
 
-        String token = extractBearerToken(authHeader);
-        ItemResponseDTO response = service.adicionarItem(token, idFicha, request);
+        ItemResponseDTO response = service.adicionarItem(idFicha, request);
 
         return Response
                 .status(Response.Status.CREATED)
@@ -89,8 +87,7 @@ public class InventarioController {
             @PathParam("idItem") String idItem,
             @Valid ItemRequestDTO request
     ) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.atualizarItem(token, idFicha, idItem, request);
+        service.atualizarItem(idFicha, idItem, request);
 
         return Response.ok().build();
     }
@@ -102,8 +99,7 @@ public class InventarioController {
             @PathParam("idFicha") String idFicha,
             @PathParam("idItem") String idItem
     ) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.deletarItem(token, idFicha, idItem);
+        service.deletarItem(idFicha, idItem);
 
         return Response.noContent().build();
     }

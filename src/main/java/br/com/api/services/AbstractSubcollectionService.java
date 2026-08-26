@@ -10,7 +10,7 @@ public abstract class AbstractSubcollectionService {
     @Inject
     FichaAccessValidator accessValidator;
 
-    protected void validarAcessoFicha(String token, String idFicha) throws ExecutionException, InterruptedException {
-        accessValidator.validarAcessoFicha(token, idFicha);
+    protected void validarAcessoFicha(String idFicha) throws ExecutionException, InterruptedException {
+        accessValidator.validarAcessoFicha(idFicha);
     }
 }

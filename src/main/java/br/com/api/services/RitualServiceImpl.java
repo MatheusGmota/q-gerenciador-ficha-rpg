@@ -23,8 +23,8 @@ public class RitualServiceImpl extends AbstractSubcollectionService implements R
     RitualMapper mapper;
 
     @Override
-    public List<RitualResponseDTO> obterTudo(String token, String idFicha) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idFicha);
+    public List<RitualResponseDTO> obterTudo(String idFicha) throws ExecutionException, InterruptedException {
+        validarAcessoFicha(idFicha);
 
         List<Ritual> rituais = repository.procurarTudo(idFicha);
         if (rituais.isEmpty()) return List.of();
@@ -36,8 +36,8 @@ public class RitualServiceImpl extends AbstractSubcollectionService implements R
     }
 
     @Override
-    public RitualResponseDTO obterPorId(String token, String idFicha, String idRitual) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idFicha);
+    public RitualResponseDTO obterPorId(String idFicha, String idRitual) throws ExecutionException, InterruptedException {
+        validarAcessoFicha(idFicha);
 
         Ritual ritual = repository.procurarPorId(idFicha, idRitual)
                 .orElseThrow(() -> new NotFoundException("Ritual não encontrada"));
@@ -46,8 +46,8 @@ public class RitualServiceImpl extends AbstractSubcollectionService implements R
     }
 
     @Override
-    public RitualResponseDTO adicionar(String token, String idFicha, RitualRequestDTO request) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idFicha);
+    public RitualResponseDTO adicionar(String idFicha, RitualRequestDTO request) throws ExecutionException, InterruptedException {
+        validarAcessoFicha(idFicha);
 
         Ritual ritual =
                 repository.persistir(idFicha, mapper.toRitual(request));
@@ -56,8 +56,8 @@ public class RitualServiceImpl extends AbstractSubcollectionService implements R
     }
 
     @Override
-    public void atualizar(String token, String idFicha, String idRitual, RitualRequestDTO request) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idFicha);
+    public void atualizar(String idFicha, String idRitual, RitualRequestDTO request) throws ExecutionException, InterruptedException {
+        validarAcessoFicha(idFicha);
 
         if (!repository.existeDocumento(idFicha, idRitual))
             throw new NotFoundException("Ritual não encontrada");
@@ -66,8 +66,8 @@ public class RitualServiceImpl extends AbstractSubcollectionService implements R
     }
 
     @Override
-    public void deletar(String token, String idFicha, String idRitual) throws ExecutionException, InterruptedException {
-        validarAcessoFicha(token, idFicha);
+    public void deletar(String idFicha, String idRitual) throws ExecutionException, InterruptedException {
+        validarAcessoFicha(idFicha);
 
         if (!repository.existeDocumento(idFicha, idRitual))
             throw new NotFoundException("Ritual não encontrada");

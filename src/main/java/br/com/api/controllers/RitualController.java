@@ -3,6 +3,7 @@ package br.com.api.controllers;
 import br.com.api.domain.dtos.ritual.RitualRequestDTO;
 import br.com.api.domain.dtos.ritual.RitualResponseDTO;
 import br.com.api.services.RitualServiceImpl;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -17,7 +18,9 @@ import static br.com.api.infra.security.AuthUtil.extractBearerToken;
 @Path("/api/v1/agentes/{idFicha}/rituais")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
+@Authenticated
 public class RitualController {
+
     @Inject
     RitualServiceImpl service;
 
@@ -25,8 +28,8 @@ public class RitualController {
     public Response getRituals(
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        List<RitualResponseDTO> todasRituals = service.obterTudo(token, idFicha);
+
+        List<RitualResponseDTO> todasRituals = service.obterTudo(idFicha);
 
         return Response.ok(todasRituals).build();
     }
@@ -36,8 +39,8 @@ public class RitualController {
             @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @Valid RitualRequestDTO request) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        RitualResponseDTO criar = service.adicionar(token, idFicha, request);
+
+        RitualResponseDTO criar = service.adicionar(idFicha, request);
 
         return Response
                 .status(Response.Status.CREATED)
@@ -53,8 +56,8 @@ public class RitualController {
             @PathParam("idRitual") String idRitual,
             @Valid RitualRequestDTO request
     ) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.atualizar(token, idFicha, idRitual, request);
+
+        service.atualizar(idFicha, idRitual, request);
 
         return Response.ok().build();
     }
@@ -66,8 +69,8 @@ public class RitualController {
             @PathParam("idFicha") String idFicha,
             @PathParam("idRitual") String idRitual
     ) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.deletar(token, idFicha, idRitual);
+
+        service.deletar(idFicha, idRitual);
 
         return Response.noContent().build();
     }
