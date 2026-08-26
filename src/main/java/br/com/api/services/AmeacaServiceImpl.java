@@ -47,9 +47,6 @@ public class AmeacaServiceImpl implements AmeacaService {
     @Inject
     FirebaseUserPrincipal currentUser;
 
-    @Inject
-    AuthenticationService authService;
-
     @Override
     public List<AmeacaResumoResponseDTO> obterTudo() throws ExecutionException, InterruptedException {
         return repository.obterTodasFichas()
@@ -103,7 +100,7 @@ public class AmeacaServiceImpl implements AmeacaService {
     public void atualizarPericia(String idFicha, PericiaUpdateDTO request) throws ExecutionException, InterruptedException {
         Ameaca ficha = accessValidator.validarAcessoFichaAmeaca(idFicha);
 
-        String chave = request.nome().name().toLowerCase();
+        String chave = request.nome().name();
         if (!ficha.getPericias().containsKey(chave)) {
             throw new NotFoundException("Perícia '%s' não encontrada."
                     .formatted(request.nome())
