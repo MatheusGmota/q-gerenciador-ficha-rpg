@@ -13,8 +13,6 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static br.com.api.infra.security.AuthUtil.extractBearerToken;
-
 @Path("/api/v1/agentes/{idFicha}/habilidades")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
@@ -26,7 +24,6 @@ public class HabilidadeController {
 
     @GET
     public Response getHabilidades(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha) throws ExecutionException, InterruptedException {
 
         List<HabilidadeResponseDTO> todasHabilidades = service.obterTudo(idFicha);
@@ -36,7 +33,6 @@ public class HabilidadeController {
 
     @POST
     public Response postHabilidade(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @Valid HabilidadeRequestDTO request) throws ExecutionException, InterruptedException {
 
@@ -51,7 +47,6 @@ public class HabilidadeController {
     @PUT
     @Path("/{idHabilidade}")
     public Response putHabilidade(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @PathParam("idHabilidade") String idHabilidade,
             @Valid HabilidadeRequestDTO request
@@ -65,7 +60,6 @@ public class HabilidadeController {
     @DELETE
     @Path("/{idHabilidade}")
     public Response deleteHabilidade (
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @PathParam("idHabilidade") String idHabilidade
     ) throws ExecutionException, InterruptedException {

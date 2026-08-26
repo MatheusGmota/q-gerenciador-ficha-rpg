@@ -13,8 +13,6 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static br.com.api.infra.security.AuthUtil.extractBearerToken;
-
 @Path("/api/v1/agentes/{idFicha}/rituais")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
@@ -26,7 +24,6 @@ public class RitualController {
 
     @GET
     public Response getRituals(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha) throws ExecutionException, InterruptedException {
 
         List<RitualResponseDTO> todasRituals = service.obterTudo(idFicha);
@@ -36,7 +33,6 @@ public class RitualController {
 
     @POST
     public Response postRitual(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @Valid RitualRequestDTO request) throws ExecutionException, InterruptedException {
 
@@ -51,7 +47,6 @@ public class RitualController {
     @PUT
     @Path("/{idRitual}")
     public Response putRitual(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @PathParam("idRitual") String idRitual,
             @Valid RitualRequestDTO request
@@ -65,7 +60,6 @@ public class RitualController {
     @DELETE
     @Path("/{idRitual}")
     public Response deleteRitual (
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @PathParam("idRitual") String idRitual
     ) throws ExecutionException, InterruptedException {

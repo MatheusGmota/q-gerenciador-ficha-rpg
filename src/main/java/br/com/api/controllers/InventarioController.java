@@ -14,8 +14,6 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.concurrent.ExecutionException;
 
-import static br.com.api.infra.security.AuthUtil.extractBearerToken;
-
 @Path("/api/v1/agentes/{idFicha}/inventario")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
@@ -27,7 +25,6 @@ public class InventarioController {
 
     @GET
     public Response getById(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha
     ) throws ExecutionException, InterruptedException {
 
@@ -38,7 +35,6 @@ public class InventarioController {
 
     @PATCH
     public Response patch (
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @Valid InventarioUpdateDTO request
     ) throws ExecutionException, InterruptedException {
@@ -52,7 +48,6 @@ public class InventarioController {
     @GET
     @Path("/itens/{idItem}")
     public Response getItem(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @PathParam("idItem") String idItem
     ) throws ExecutionException, InterruptedException {
@@ -67,7 +62,6 @@ public class InventarioController {
     @POST
     @Path("/itens")
     public Response postItem(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @Valid ItemRequestDTO request) throws ExecutionException, InterruptedException {
 
@@ -82,7 +76,6 @@ public class InventarioController {
     @PATCH
     @Path("/itens/{idItem}")
     public Response patchItem(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @PathParam("idItem") String idItem,
             @Valid ItemRequestDTO request
@@ -95,7 +88,6 @@ public class InventarioController {
     @DELETE
     @Path("/itens/{idItem}")
     public Response deleteItem (
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("idFicha") String idFicha,
             @PathParam("idItem") String idItem
     ) throws ExecutionException, InterruptedException {
