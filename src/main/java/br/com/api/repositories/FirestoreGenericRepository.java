@@ -24,7 +24,7 @@ public abstract class FirestoreGenericRepository<T> {
     }
 
     protected CollectionReference getSubCollection(String idFicha) {
-        return db.collection("fichas")
+        return db.collection("agentes")
                 .document(idFicha)
                 .collection(getCollectionName());
     }

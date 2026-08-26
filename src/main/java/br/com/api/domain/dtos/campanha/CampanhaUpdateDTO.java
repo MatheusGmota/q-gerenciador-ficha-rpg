@@ -1,6 +1,7 @@
 package br.com.api.domain.dtos.campanha;
 
 import br.com.api.domain.enums.StatusCampanha;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
 public record CampanhaUpdateDTO(
@@ -13,6 +14,9 @@ public record CampanhaUpdateDTO(
 
         String imagemCapaUrl,
 
-        StatusCampanha status
+        StatusCampanha status,
+
+        @Min(value = 1, message = "O limite de fichas deve ser pelo menos 1")
+        Integer maxFichas
 ) {
 }

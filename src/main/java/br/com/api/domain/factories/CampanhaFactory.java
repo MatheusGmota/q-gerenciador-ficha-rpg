@@ -21,6 +21,7 @@ public class CampanhaFactory {
         campanha.setIdMestre(idUsuario);
         campanha.setStatus(StatusCampanha.ATIVA);
         campanha.setMaxMembros(10);
+        campanha.setMaxFichas(20);
         return campanha;
     }
 

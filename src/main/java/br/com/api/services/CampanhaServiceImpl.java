@@ -19,6 +19,7 @@ import br.com.api.domain.mappers.ConviteMapper;
 import br.com.api.domain.mappers.MembroMapper;
 import br.com.api.repositories.interfaces.CampanhaRepository;
 import br.com.api.repositories.interfaces.ConviteRepository;
+import br.com.api.repositories.interfaces.FichaVinculadaRepository;
 import br.com.api.repositories.interfaces.MembroRepository;
 import br.com.api.services.interfaces.CampanhaService;
 import com.google.firebase.auth.FirebaseToken;
@@ -64,6 +65,9 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Inject
     ConviteMapper conviteMapper;
+
+    @Inject
+    FichaVinculadaRepository fichaVinculadaRepository;
 
     @Override
     public List<CampanhaResumoResponseDTO> obterTudo(String token) throws ExecutionException, InterruptedException {
@@ -138,6 +142,7 @@ public class CampanhaServiceImpl implements CampanhaService {
         validarAcessoMestre(idCampanha, uid);
 
         membroRepository.deletarPorCampanha(idCampanha);
+        fichaVinculadaRepository.desvincularTodasDaCampanha(idCampanha);
         repository.deletar(idCampanha);
     }
 

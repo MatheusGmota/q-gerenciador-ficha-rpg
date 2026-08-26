@@ -21,6 +21,7 @@ public class Campanha {
     private String descricao;
     private String imagemCapaUrl;
     private int maxMembros;
+    private int maxFichas;
     private StatusCampanha status;
 
     @ServerTimestamp
