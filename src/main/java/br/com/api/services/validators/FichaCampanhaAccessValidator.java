@@ -31,10 +31,7 @@ public class FichaCampanhaAccessValidator {
         }
     }
 
-    public ContextoAcesso autenticarMembro(String token, String idCampanha) throws ExecutionException, InterruptedException {
-        FirebaseToken firebaseToken = authService.validarToken(token);
-        String uid = firebaseToken.getUid();
-
+    public ContextoAcesso autenticarMembro(String uid, String idCampanha) throws ExecutionException, InterruptedException {
         campanhaRepository.obterPorId(idCampanha)
                 .orElseThrow(() -> new NotFoundException("Campanha não encontrada"));
 
@@ -44,8 +41,8 @@ public class FichaCampanhaAccessValidator {
         return new ContextoAcesso(uid, membro);
     }
 
-    public ContextoAcesso exigirMestre(String token, String idCampanha) throws ExecutionException, InterruptedException {
-        ContextoAcesso ctx = autenticarMembro(token, idCampanha);
+    public ContextoAcesso exigirMestre(String uid, String idCampanha) throws ExecutionException, InterruptedException {
+        ContextoAcesso ctx = autenticarMembro(uid, idCampanha);
 
         if (!ctx.ehMestre()) {
             throw new ForbiddenException("Apenas o mestre da campanha pode realizar esta ação");

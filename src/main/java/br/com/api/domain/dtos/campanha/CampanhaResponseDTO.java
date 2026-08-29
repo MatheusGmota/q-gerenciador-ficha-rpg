@@ -9,6 +9,7 @@ public record CampanhaResponseDTO(
         String descricao,
         String imagemCapaUrl,
         Integer maxMembros,
+        Integer maxFichas,
         StatusCampanha status,
         String criadoEm
 ) {

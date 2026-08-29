@@ -6,6 +6,7 @@ import br.com.api.domain.dtos.ameaca.AmeacaResponseDTO;
 import br.com.api.domain.dtos.ameaca.AmeacaUpdateDTO;
 import br.com.api.domain.dtos.fichavinculada.FichaVinculadaResponseDTO;
 import br.com.api.services.interfaces.FichaCampanhaService;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -15,126 +16,107 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static br.com.api.infra.security.AuthUtil.extractBearerToken;
-
-@Path("/api/v1/campanhas/{idCampanha}")
+@Path("/api/v1/campanha")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
+@Authenticated
 public class FichaCampanhaController {
 
     @Inject
     FichaCampanhaService service;
 
     @GET
-    @Path("/fichas")
+    @Path("/{id}/fichas")
     public Response listarFichas(
-            @HeaderParam("Authorization") String authHeader,
-            @PathParam("idCampanha") String idCampanha)
+            @PathParam("id") String id)
             throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        List<FichaVinculadaResponseDTO> response = service.listarFichas(token, idCampanha);
+        List<FichaVinculadaResponseDTO> response = service.listarFichas(id);
         return Response.ok(response).build();
     }
 
     // ================ AGENTES ====================
 
     @POST
-    @Path("/agentes/{idFicha}")
+    @Path("/{id}/agentes/{idFicha}")
     public Response vincularAgente(
-            @HeaderParam("Authorization") String authHeader,
-            @PathParam("idCampanha") String idCampanha,
+            @PathParam("id") String id,
             @PathParam("idFicha") String idFicha)
             throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        FichaVinculadaResponseDTO response = service.vincularAgente(token, idCampanha, idFicha);
+        FichaVinculadaResponseDTO response = service.vincularAgente(id, idFicha);
         return Response.status(201).entity(response).build();
     }
 
     @DELETE
-    @Path("/agentes/{idFicha}")
+    @Path("/{id}/agentes/{idFicha}")
     public Response desvincularAgente(
-            @HeaderParam("Authorization") String authHeader,
-            @PathParam("idCampanha") String idCampanha,
+            @PathParam("id") String id,
             @PathParam("idFicha") String idFicha)
             throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.desvincularAgente(token, idCampanha, idFicha);
+        service.desvincularAgente(id, idFicha);
         return Response.noContent().build();
     }
 
     @GET
-    @Path("/agentes/{idFicha}")
+    @Path("/{id}/agentes/{idFicha}")
     public Response obterAgente(
-            @HeaderParam("Authorization") String authHeader,
-            @PathParam("idCampanha") String idCampanha,
+            @PathParam("id") String id,
             @PathParam("idFicha") String idFicha)
             throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        AgenteResponseDTO response = service.obterAgente(token, idCampanha, idFicha);
+        AgenteResponseDTO response = service.obterAgente(id, idFicha);
         return Response.ok(response).build();
     }
 
     @PATCH
-    @Path("/agentes/{idFicha}")
+    @Path("/{id}/agentes/{idFicha}")
     public Response atualizarAgente(
-            @HeaderParam("Authorization") String authHeader,
-            @PathParam("idCampanha") String idCampanha,
+            @PathParam("id") String id,
             @PathParam("idFicha") String idFicha,
             @Valid AgenteUpdateDTO request)
             throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.atualizarAgente(token, idCampanha, idFicha, request);
+        service.atualizarAgente(id, idFicha, request);
         return Response.ok().build();
     }
 
     // ================ AMEAÇAS ====================
 
     @POST
-    @Path("/ameacas/{idFicha}")
+    @Path("/{id}/ameacas/{idFicha}")
     public Response vincularAmeaca(
-            @HeaderParam("Authorization") String authHeader,
-            @PathParam("idCampanha") String idCampanha,
+            @PathParam("id") String id,
             @PathParam("idFicha") String idFicha)
             throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        FichaVinculadaResponseDTO response = service.vincularAmeaca(token, idCampanha, idFicha);
+        FichaVinculadaResponseDTO response = service.vincularAmeaca(id, idFicha);
         return Response.status(201).entity(response).build();
     }
 
     @DELETE
-    @Path("/ameacas/{idFicha}")
+    @Path("/{id}/ameacas/{idFicha}")
     public Response desvincularAmeaca(
-            @HeaderParam("Authorization") String authHeader,
-            @PathParam("idCampanha") String idCampanha,
+            @PathParam("id") String id,
             @PathParam("idFicha") String idFicha)
             throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.desvincularAmeaca(token, idCampanha, idFicha);
+        service.desvincularAmeaca(id, idFicha);
         return Response.noContent().build();
     }
 
     @GET
-    @Path("/ameacas/{idFicha}")
+    @Path("/{id}/ameacas/{idFicha}")
     public Response obterAmeaca(
-            @HeaderParam("Authorization") String authHeader,
-            @PathParam("idCampanha") String idCampanha,
+            @PathParam("id") String id,
             @PathParam("idFicha") String idFicha)
             throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        AmeacaResponseDTO response = service.obterAmeaca(token, idCampanha, idFicha);
+        AmeacaResponseDTO response = service.obterAmeaca(id, idFicha);
         return Response.ok(response).build();
     }
 
     @PATCH
-    @Path("/ameacas/{idFicha}")
+    @Path("/{id}/ameacas/{idFicha}")
     public Response atualizarAmeaca(
-            @HeaderParam("Authorization") String authHeader,
-            @PathParam("idCampanha") String idCampanha,
+            @PathParam("id") String id,
             @PathParam("idFicha") String idFicha,
             @Valid AmeacaUpdateDTO request)
             throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        service.atualizarAmeaca(token, idCampanha, idFicha, request);
+        service.atualizarAmeaca(id, idFicha, request);
         return Response.ok().build();
     }
 }

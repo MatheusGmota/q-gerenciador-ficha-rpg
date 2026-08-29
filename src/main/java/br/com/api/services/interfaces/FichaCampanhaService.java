@@ -11,13 +11,13 @@ import java.util.concurrent.ExecutionException;
 
 public interface FichaCampanhaService {
 
-    FichaVinculadaResponseDTO vincularAgente(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
-    FichaVinculadaResponseDTO vincularAmeaca(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
-    void desvincularAgente(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
-    void desvincularAmeaca(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
-    List<FichaVinculadaResponseDTO> listarFichas(String token, String idCampanha) throws ExecutionException, InterruptedException;
-    AgenteResponseDTO obterAgente(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
-    void atualizarAgente(String token, String idCampanha, String idFicha, AgenteUpdateDTO request) throws ExecutionException, InterruptedException;
-    AmeacaResponseDTO obterAmeaca(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
-    void atualizarAmeaca(String token, String idCampanha, String idFicha, AmeacaUpdateDTO request) throws ExecutionException, InterruptedException;
+    FichaVinculadaResponseDTO vincularAgente(String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
+    FichaVinculadaResponseDTO vincularAmeaca(String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
+    void desvincularAgente(String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
+    void desvincularAmeaca(String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
+    List<FichaVinculadaResponseDTO> listarFichas(String idCampanha) throws ExecutionException, InterruptedException;
+    AgenteResponseDTO obterAgente(String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
+    void atualizarAgente(String idCampanha, String idFicha, AgenteUpdateDTO request) throws ExecutionException, InterruptedException;
+    AmeacaResponseDTO obterAmeaca(String idCampanha, String idFicha) throws ExecutionException, InterruptedException;
+    void atualizarAmeaca(String idCampanha, String idFicha, AmeacaUpdateDTO request) throws ExecutionException, InterruptedException;
 }

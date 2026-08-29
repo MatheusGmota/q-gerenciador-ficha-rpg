@@ -5,12 +5,6 @@ import lombok.Getter;
 
 import java.security.Principal;
 
-/**
- * Representa o usuário autenticado na request atual.
- * Substitui a necessidade de repassar "String token" por todas as camadas
- * (controller -> service -> validator): quem precisar do usuário logado
- * injeta FirebaseUserPrincipal diretamente (ver CurrentUserProducer).
- */
 @Getter
 public class FirebaseUserPrincipal implements Principal {
 
@@ -22,7 +16,7 @@ public class FirebaseUserPrincipal implements Principal {
 
     @Override
     public String getName() {
-        return firebaseToken.getUid();
+        return firebaseToken.getName();
     }
 
     public String getUid() {

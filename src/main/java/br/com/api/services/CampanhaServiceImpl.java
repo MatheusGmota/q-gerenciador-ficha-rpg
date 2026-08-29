@@ -17,12 +17,12 @@ import br.com.api.domain.factories.ConviteFactory;
 import br.com.api.domain.mappers.CampanhaMapper;
 import br.com.api.domain.mappers.ConviteMapper;
 import br.com.api.domain.mappers.MembroMapper;
+import br.com.api.infra.security.FirebaseUserPrincipal;
 import br.com.api.repositories.interfaces.CampanhaRepository;
 import br.com.api.repositories.interfaces.ConviteRepository;
 import br.com.api.repositories.interfaces.FichaVinculadaRepository;
 import br.com.api.repositories.interfaces.MembroRepository;
 import br.com.api.services.interfaces.CampanhaService;
-import com.google.firebase.auth.FirebaseToken;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ForbiddenException;
@@ -49,7 +49,7 @@ public class CampanhaServiceImpl implements CampanhaService {
     CampanhaRepository repository;
 
     @Inject
-    AuthenticationService authService;
+    FirebaseUserPrincipal currentUser;
 
     @Inject
     MembroRepository membroRepository;
@@ -70,9 +70,7 @@ public class CampanhaServiceImpl implements CampanhaService {
     FichaVinculadaRepository fichaVinculadaRepository;
 
     @Override
-    public List<CampanhaResumoResponseDTO> obterTudo(String token) throws ExecutionException, InterruptedException {
-        authService.validarToken(token);
-
+    public List<CampanhaResumoResponseDTO> obterTudo() throws ExecutionException, InterruptedException {
         List<Campanha> campanhas = repository.obterTodas();
 
         return campanhas
@@ -81,8 +79,8 @@ public class CampanhaServiceImpl implements CampanhaService {
     }
 
     @Override
-    public List<CampanhaResumoResponseDTO> obterPorIdUsuario(String token) throws ExecutionException, InterruptedException {
-        String uid = authService.validarToken(token).getUid();
+    public List<CampanhaResumoResponseDTO> obterPorIdUsuario() throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
 
         List<Campanha> campanhas = repository.obterPorIdUsuario(uid);
 
@@ -92,9 +90,7 @@ public class CampanhaServiceImpl implements CampanhaService {
     }
 
     @Override
-    public CampanhaResponseDTO obter(String token, String idCampanha) throws ExecutionException, InterruptedException {
-        authService.validarToken(token);
-
+    public CampanhaResponseDTO obter(String idCampanha) throws ExecutionException, InterruptedException {
         Campanha campanha = repository.obterPorId(idCampanha)
                 .orElseThrow(() -> new NotFoundException(
                         "Campanha '%s' não encontrada"
@@ -105,27 +101,27 @@ public class CampanhaServiceImpl implements CampanhaService {
     }
 
     @Override
-    public CampanhaResponseDTO criar(String token, CampanhaCreateDTO request) throws ExecutionException, InterruptedException {
-        FirebaseToken firebaseToken = authService.validarToken(token);
-
-        String uid = firebaseToken.getUid();
+    public CampanhaResponseDTO criar(CampanhaCreateDTO request) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
 
         Campanha campanha = repository.persistir(
                 factory.criar(uid, request)
         );
 
+        log.info("Id usuário: {}", currentUser.getName());
+
         membroRepository.adicionar(
                 campanha.getId(),
                 uid,
-                factory.inicializarMestre(uid, firebaseToken.getName())
+                factory.inicializarMestre(uid, currentUser.getName())
         );
 
         return mapper.toCampanhaDto(campanha);
     }
 
     @Override
-    public void atualizar(String token, String idCampanha, CampanhaUpdateDTO request) throws ExecutionException, InterruptedException {
-        String uid = authService.validarToken(token).getUid();
+    public void atualizar(String idCampanha, CampanhaUpdateDTO request) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
 
         validarCampanhaExiste(idCampanha);
         validarAcessoMestre(idCampanha, uid);
@@ -135,8 +131,8 @@ public class CampanhaServiceImpl implements CampanhaService {
     }
 
     @Override
-    public void deletar(String token, String idCampanha) throws ExecutionException, InterruptedException {
-        String uid = authService.validarToken(token).getUid();
+    public void deletar(String idCampanha) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
 
         validarCampanhaExiste(idCampanha);
         validarAcessoMestre(idCampanha, uid);
@@ -147,9 +143,7 @@ public class CampanhaServiceImpl implements CampanhaService {
     }
 
     @Override
-    public List<MembroResponseDTO> obterMembros(String token, String idCampanha) throws ExecutionException, InterruptedException {
-        authService.validarToken(token);
-
+    public List<MembroResponseDTO> obterMembros(String idCampanha) throws ExecutionException, InterruptedException {
         validarCampanhaExiste(idCampanha);
 
         return membroRepository.obterTodosPorCampanha(idCampanha)
@@ -159,8 +153,8 @@ public class CampanhaServiceImpl implements CampanhaService {
     }
 
     @Override
-    public void removerMembro(String token, String idCampanha, String idUsuarioAlvo) throws ExecutionException, InterruptedException {
-        String uid = authService.validarToken(token).getUid();
+    public void removerMembro(String idCampanha, String idUsuarioAlvo) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
 
         validarCampanhaExiste(idCampanha);
         validarAcessoMestre(idCampanha, uid);
@@ -180,8 +174,8 @@ public class CampanhaServiceImpl implements CampanhaService {
     }
 
     @Override
-    public ConviteResponseDTO gerarConvite(String token, String idCampanha, ConviteCreateDTO request) throws ExecutionException, InterruptedException {
-        String uid = authService.validarToken(token).getUid();
+    public ConviteResponseDTO gerarConvite(String idCampanha, ConviteCreateDTO request) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
 
         Campanha campanha = repository.obterPorId(idCampanha)
                 .orElseThrow(() -> new NotFoundException(
@@ -197,13 +191,11 @@ public class CampanhaServiceImpl implements CampanhaService {
     }
 
     @Override
-    public MembroResponseDTO entrarPorConvite(String token, String tokenConvite) throws ExecutionException, InterruptedException {
-        FirebaseToken firebaseToken = authService.validarToken(token);
-
+    public MembroResponseDTO entrarPorConvite(String tokenConvite) throws ExecutionException, InterruptedException {
         ResgatarConvite resultado = conviteRepository.resgatar(
                 tokenConvite,
-                firebaseToken.getUid(),
-                firebaseToken.getName()
+                currentUser.getUid(),
+                currentUser.getName()
         );
 
         return membroMapper.toMembroDto(resultado.membro());

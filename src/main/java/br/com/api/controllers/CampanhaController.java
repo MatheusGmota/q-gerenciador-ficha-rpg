@@ -8,6 +8,7 @@ import br.com.api.domain.dtos.convite.ConviteCreateDTO;
 import br.com.api.domain.dtos.convite.ConviteResponseDTO;
 import br.com.api.domain.dtos.membro.MembroResponseDTO;
 import br.com.api.services.interfaces.CampanhaService;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -17,44 +18,36 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static br.com.api.infra.security.AuthUtil.extractBearerToken;
-
 @Path("/api/v1/campanhas")
 @Produces({MediaType.APPLICATION_JSON})
 @Consumes({MediaType.APPLICATION_JSON})
+@Authenticated
 public class CampanhaController {
 
     @Inject
     private CampanhaService service;
 
     @GET
-    public Response obterCampanhasUsuario(@HeaderParam("Authorization") String authHeader) throws ExecutionException, InterruptedException {
-        String token = extractBearerToken(authHeader);
-        List<CampanhaResumoResponseDTO> response = service.obterPorIdUsuario(token);
+    public Response obterCampanhasUsuario() throws ExecutionException, InterruptedException {
+        List<CampanhaResumoResponseDTO> response = service.obterPorIdUsuario();
         return Response.ok(response).build();
     }
 
     @GET
     @Path("/{id}")
     public Response obterCampanha(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("id") String id)
             throws ExecutionException, InterruptedException {
-
-        String token = extractBearerToken(authHeader);
-        CampanhaResponseDTO response = service.obter(token, id);
+        CampanhaResponseDTO response = service.obter(id);
 
         return Response.ok(response).build();
     }
 
     @POST
     public Response cadastrarCampanha(
-            @HeaderParam("Authorization") String authHeader,
             @Valid CampanhaCreateDTO request)
             throws ExecutionException, InterruptedException {
-
-        String token = extractBearerToken(authHeader);
-        CampanhaResponseDTO response = service.criar(token, request);
+        CampanhaResponseDTO response = service.criar(request);
 
         return Response
                 .status(201)
@@ -65,13 +58,10 @@ public class CampanhaController {
     @PUT
     @Path("/{id}")
     public Response atualizarCampanha(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("id") String id,
             @Valid CampanhaUpdateDTO request)
             throws ExecutionException, InterruptedException {
-
-        String token = extractBearerToken(authHeader);
-        service.atualizar(token, id, request);
+        service.atualizar(id, request);
 
         return Response.noContent().build();
     }
@@ -79,12 +69,9 @@ public class CampanhaController {
     @DELETE
     @Path("/{id}")
     public Response deletarCampanha(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("id") String id)
             throws ExecutionException, InterruptedException {
-
-        String token = extractBearerToken(authHeader);
-        service.deletar(token, id);
+        service.deletar(id);
 
         return Response.noContent().build();
     }
@@ -92,12 +79,9 @@ public class CampanhaController {
     @GET
     @Path("/{id}/membros")
     public Response obterMembros(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("id") String id)
             throws ExecutionException, InterruptedException {
-
-        String token = extractBearerToken(authHeader);
-        List<MembroResponseDTO> response = service.obterMembros(token, id);
+        List<MembroResponseDTO> response = service.obterMembros(id);
 
         return Response.ok(response).build();
     }
@@ -105,13 +89,10 @@ public class CampanhaController {
     @DELETE
     @Path("/{id}/membros/{idUsuario}")
     public Response removerMembro(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("id") String id,
             @PathParam("idUsuario") String idUsuario)
             throws ExecutionException, InterruptedException {
-
-        String token = extractBearerToken(authHeader);
-        service.removerMembro(token, id, idUsuario);
+        service.removerMembro(id, idUsuario);
 
         return Response.noContent().build();
     }
@@ -119,13 +100,10 @@ public class CampanhaController {
     @POST
     @Path("/{id}/convites")
     public Response gerarConvite(
-            @HeaderParam("Authorization") String authHeader,
             @PathParam("id") String id,
             @Valid ConviteCreateDTO request)
             throws ExecutionException, InterruptedException {
-
-        String token = extractBearerToken(authHeader);
-        ConviteResponseDTO response = service.gerarConvite(token, id, request);
+        ConviteResponseDTO response = service.gerarConvite(id, request);
 
         return Response.status(201).entity(response).build();
     }

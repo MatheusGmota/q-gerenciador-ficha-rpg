@@ -12,17 +12,17 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface CampanhaService {
-    List<CampanhaResumoResponseDTO> obterTudo(String token) throws ExecutionException, InterruptedException;
-    List<CampanhaResumoResponseDTO> obterPorIdUsuario(String token) throws ExecutionException, InterruptedException;
-    CampanhaResponseDTO obter(String token, String idCampanha) throws ExecutionException, InterruptedException;
-    CampanhaResponseDTO criar(String token, CampanhaCreateDTO request) throws ExecutionException, InterruptedException;
-    void atualizar(String token, String idCampanha, CampanhaUpdateDTO request) throws ExecutionException, InterruptedException;
-    void deletar(String token, String idCampanha) throws ExecutionException, InterruptedException;
+    List<CampanhaResumoResponseDTO> obterTudo() throws ExecutionException, InterruptedException;
+    List<CampanhaResumoResponseDTO> obterPorIdUsuario() throws ExecutionException, InterruptedException;
+    CampanhaResponseDTO obter(String idCampanha) throws ExecutionException, InterruptedException;
+    CampanhaResponseDTO criar(CampanhaCreateDTO request) throws ExecutionException, InterruptedException;
+    void atualizar(String idCampanha, CampanhaUpdateDTO request) throws ExecutionException, InterruptedException;
+    void deletar(String idCampanha) throws ExecutionException, InterruptedException;
 
-    List<MembroResponseDTO> obterMembros(String token, String idCampanha) throws ExecutionException, InterruptedException;
-    void removerMembro(String token, String idCampanha, String idUsuarioAlvo) throws ExecutionException, InterruptedException;
+    List<MembroResponseDTO> obterMembros(String idCampanha) throws ExecutionException, InterruptedException;
+    void removerMembro(String idCampanha, String idUsuarioAlvo) throws ExecutionException, InterruptedException;
 
-    ConviteResponseDTO gerarConvite(String token, String idCampanha, ConviteCreateDTO request) throws ExecutionException, InterruptedException;
+    ConviteResponseDTO gerarConvite(String idCampanha, ConviteCreateDTO request) throws ExecutionException, InterruptedException;
 
-    MembroResponseDTO entrarPorConvite(String token, String tokenConvite) throws ExecutionException, InterruptedException;
+    MembroResponseDTO entrarPorConvite(String tokenConvite) throws ExecutionException, InterruptedException;
 }

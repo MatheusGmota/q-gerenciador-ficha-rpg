@@ -12,6 +12,7 @@ import br.com.api.domain.enums.TipoFicha;
 import br.com.api.domain.mappers.AgenteMapper;
 import br.com.api.domain.mappers.AmeacaMapper;
 import br.com.api.domain.mappers.FichaVinculadaMapper;
+import br.com.api.infra.security.FirebaseUserPrincipal;
 import br.com.api.repositories.interfaces.AgenteRepository;
 import br.com.api.repositories.interfaces.AmeacaRepository;
 import br.com.api.repositories.interfaces.FichaVinculadaRepository;
@@ -54,9 +55,13 @@ public class FichaCampanhaServiceImpl implements FichaCampanhaService {
     @Inject
     FichaVinculadaMapper fichaVinculadaMapper;
 
+    @Inject
+    FirebaseUserPrincipal currentUser;
+
     @Override
-    public FichaVinculadaResponseDTO vincularAgente(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
-        ContextoAcesso ctx = accessValidator.autenticarMembro(token, idCampanha);
+    public FichaVinculadaResponseDTO vincularAgente(String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
+        ContextoAcesso ctx = accessValidator.autenticarMembro(uid, idCampanha);
 
         Agente ficha = agenteRepository.obterPorId(idFicha)
                 .orElseThrow(() -> new NotFoundException("Ficha não encontrada"));
@@ -72,8 +77,9 @@ public class FichaCampanhaServiceImpl implements FichaCampanhaService {
     }
 
     @Override
-    public FichaVinculadaResponseDTO vincularAmeaca(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
-        ContextoAcesso ctx = accessValidator.exigirMestre(token, idCampanha);
+    public FichaVinculadaResponseDTO vincularAmeaca(String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
+        ContextoAcesso ctx = accessValidator.exigirMestre(uid, idCampanha);
 
         Ameaca ficha = ameacaRepository.obterPorId(idFicha)
                 .orElseThrow(() -> new NotFoundException("Ficha não encontrada"));
@@ -89,8 +95,9 @@ public class FichaCampanhaServiceImpl implements FichaCampanhaService {
     }
 
     @Override
-    public void desvincularAgente(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
-        ContextoAcesso ctx = accessValidator.autenticarMembro(token, idCampanha);
+    public void desvincularAgente(String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
+        ContextoAcesso ctx = accessValidator.autenticarMembro(uid, idCampanha);
 
         FichaVinculada vinculo = fichaVinculadaRepository.obterPorId(idCampanha, idFicha)
                 .orElseThrow(() -> new NotFoundException("Ficha não está vinculada a esta campanha"));
@@ -103,8 +110,9 @@ public class FichaCampanhaServiceImpl implements FichaCampanhaService {
     }
 
     @Override
-    public void desvincularAmeaca(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
-        accessValidator.exigirMestre(token, idCampanha);
+    public void desvincularAmeaca(String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
+        accessValidator.exigirMestre(uid, idCampanha);
 
         fichaVinculadaRepository.obterPorId(idCampanha, idFicha)
                 .orElseThrow(() -> new NotFoundException("Ficha não está vinculada a esta campanha"));
@@ -113,8 +121,9 @@ public class FichaCampanhaServiceImpl implements FichaCampanhaService {
     }
 
     @Override
-    public List<FichaVinculadaResponseDTO> listarFichas(String token, String idCampanha) throws ExecutionException, InterruptedException {
-        ContextoAcesso ctx = accessValidator.autenticarMembro(token, idCampanha);
+    public List<FichaVinculadaResponseDTO> listarFichas(String idCampanha) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
+        ContextoAcesso ctx = accessValidator.autenticarMembro(uid, idCampanha);
 
         List<FichaVinculada> vinculos = ctx.ehMestre()
                 ? fichaVinculadaRepository.obterTodas(idCampanha)
@@ -124,8 +133,9 @@ public class FichaCampanhaServiceImpl implements FichaCampanhaService {
     }
 
     @Override
-    public AgenteResponseDTO obterAgente(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
-        ContextoAcesso ctx = accessValidator.autenticarMembro(token, idCampanha);
+    public AgenteResponseDTO obterAgente(String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
+        ContextoAcesso ctx = accessValidator.autenticarMembro(uid, idCampanha);
 
         FichaVinculada vinculo = validarVinculoAgente(idCampanha, idFicha, ctx);
 
@@ -136,8 +146,9 @@ public class FichaCampanhaServiceImpl implements FichaCampanhaService {
     }
 
     @Override
-    public void atualizarAgente(String token, String idCampanha, String idFicha, AgenteUpdateDTO request) throws ExecutionException, InterruptedException {
-        ContextoAcesso ctx = accessValidator.autenticarMembro(token, idCampanha);
+    public void atualizarAgente(String idCampanha, String idFicha, AgenteUpdateDTO request) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
+        ContextoAcesso ctx = accessValidator.autenticarMembro(uid, idCampanha);
 
         validarVinculoAgente(idCampanha, idFicha, ctx);
 
@@ -146,8 +157,9 @@ public class FichaCampanhaServiceImpl implements FichaCampanhaService {
     }
 
     @Override
-    public AmeacaResponseDTO obterAmeaca(String token, String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
-        accessValidator.exigirMestre(token, idCampanha);
+    public AmeacaResponseDTO obterAmeaca(String idCampanha, String idFicha) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
+        accessValidator.exigirMestre(uid, idCampanha);
 
         fichaVinculadaRepository.obterPorId(idCampanha, idFicha)
                 .orElseThrow(() -> new NotFoundException("Ficha não vinculada a esta campanha"));
@@ -159,8 +171,9 @@ public class FichaCampanhaServiceImpl implements FichaCampanhaService {
     }
 
     @Override
-    public void atualizarAmeaca(String token, String idCampanha, String idFicha, AmeacaUpdateDTO request) throws ExecutionException, InterruptedException {
-        accessValidator.exigirMestre(token, idCampanha);
+    public void atualizarAmeaca(String idCampanha, String idFicha, AmeacaUpdateDTO request) throws ExecutionException, InterruptedException {
+        String uid = currentUser.getUid();
+        accessValidator.exigirMestre(uid, idCampanha);
 
         fichaVinculadaRepository.obterPorId(idCampanha, idFicha)
                 .orElseThrow(() -> new NotFoundException("Ficha não vinculada a esta campanha"));
