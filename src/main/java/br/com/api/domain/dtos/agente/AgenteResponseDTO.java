@@ -5,6 +5,7 @@ import br.com.api.domain.enums.TipoElemento;
 import br.com.api.domain.enums.TipoOrigem;
 import br.com.api.domain.enums.TipoTrilha;
 import br.com.api.domain.model.Atributos;
+import br.com.api.domain.model.Descricao;
 import br.com.api.domain.model.Status;
 
 public record AgenteResponseDTO (
@@ -22,6 +23,7 @@ public record AgenteResponseDTO (
         Status pontosVida,
         Status pontosSanidade,
         Status pontosEsforco,
+        Descricao descricao,
         Atributos atributos,
 
         int nivelExposicao,
