@@ -16,6 +16,7 @@ public abstract class FirestoreGenericRepository<T> {
     protected Firestore db;
 
     protected abstract Class<T> getEntityClass();
+    protected abstract String getParenteCollectionName();
 
     protected String getCollectionName() {
         return getEntityClass()
@@ -24,7 +25,7 @@ public abstract class FirestoreGenericRepository<T> {
     }
 
     protected CollectionReference getSubCollection(String idFicha) {
-        return db.collection("agentes")
+        return db.collection(getParenteCollectionName())
                 .document(idFicha)
                 .collection(getCollectionName());
     }

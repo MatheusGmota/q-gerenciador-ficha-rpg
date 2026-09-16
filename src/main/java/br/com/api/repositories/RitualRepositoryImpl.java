@@ -9,4 +9,9 @@ public class RitualRepositoryImpl extends FirestoreGenericRepository<Ritual> {
     protected Class<Ritual> getEntityClass() {
         return Ritual.class;
     }
+
+    @Override
+    protected String getParenteCollectionName() {
+        return "agentes";
+    }
 }

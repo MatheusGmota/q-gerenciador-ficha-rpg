@@ -9,4 +9,7 @@ public class HabilidadeRepositoryImpl extends FirestoreGenericRepository<Habilid
     protected Class<Habilidade> getEntityClass() {
         return Habilidade.class;
     }
+
+    @Override
+    protected String getParenteCollectionName() { return "agentes"; }
 }

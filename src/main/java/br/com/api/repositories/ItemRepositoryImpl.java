@@ -10,4 +10,9 @@ public class ItemRepositoryImpl extends FirestoreGenericRepository<Item> {
         return Item.class;
     }
 
+    @Override
+    protected String getParenteCollectionName() {
+        return "inventarios";
+    }
+
 }
